@@ -57,6 +57,7 @@ const Page = () => {
             setAlert({type:res.success ? "success" : "error", message: res.message})
 
             if(res.success){
+                localStorage.setItem("storeToken", res.token)
                 router.push("/shop");
             }
         })

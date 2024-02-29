@@ -141,7 +141,9 @@ const Page = () => {
         setAlert({type:res.success ? "success" : "error", message: res.message})
 
         if(res.success){
-          router.push("/login");
+          localStorage.setItem("storeToken", res.token)
+          localStorage.setItem("currentUser", res.results.stringify())
+          router.push("/shop");
         }
       })
     }
