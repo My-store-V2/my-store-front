@@ -151,7 +151,7 @@ export default function Page(){
         handleSmoothScroll();
      }, []);
 
-    return (
+     return (
         <div>
             {user && (<div className='container flex flex-row items-center justify-between mx-auto'>
                 <div className='py-8 flex flex-col'>
