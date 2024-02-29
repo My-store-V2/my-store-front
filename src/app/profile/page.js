@@ -21,6 +21,8 @@ import Alert from "@/components/UI/Alert";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import { getWishList, getProduct } from "@/services/api/product.api.js";
+
 import Grid from '@mui/material/Grid';
 import { getWishList, getProduct } from "@/services/api/product.api.js";
 
