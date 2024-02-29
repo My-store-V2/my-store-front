@@ -27,7 +27,7 @@ import * as Yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { getCityByCode } from "../../services/api/global.api";
-import { signUp } from "../../services/api/auth.api";
+import { signUp, getUser } from "../../services/api/auth.api";
 import { useRouter } from 'next/navigation'
 
 const TextMaskCustom = React.forwardRef(function TextMaskCustom(props, ref) {
@@ -132,14 +132,19 @@ const Page = () => {
     setValidated(true);
     if(data.password === confPassword){
       data.admin = false;
-      data.phone = '+33' + data.phone.replace(/\s/g, '')
+
       signUp(data)
-      .then((res) => {
+      .then(async (res) => {
         setAlert({type:res.success ? "success" : "error", message: res.message})
 
         if(res.success){
-          router.push("/login");
-        }
+                localStorage.setItem('storeToken', res.token);
+                await getUser()
+                .then((data) => {
+                    localStorage.setItem("currentUser", JSON.stringify(data.user))
+                    router.push("/shop");
+                })
+            }
       })
     }
   }

@@ -14,7 +14,6 @@ import VisibilityOffOutlined from '@mui/icons-material/VisibilityOffOutlined'
 import * as Yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { getProducts } from "@/services/api/product.api.js";
 import ProductsGrid from "@/components/products/ProductsGrid";
 import ProductsCounter from "@/components/products/ProductsCounter";
 import { useState, useEffect } from 'react';
@@ -22,6 +21,8 @@ import Alert from "@/components/UI/Alert";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import { getWishList, getProduct } from "@/services/api/product.api.js";
+
 
 const style = {
   position: 'absolute',
@@ -37,7 +38,8 @@ const style = {
 
 export default function Page(){
 
-    const [products, setProducts] = useState(null);
+    const [products, setProducts] = useState([]);
+    const [user, setUser] = useState(null);
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -45,17 +47,29 @@ export default function Page(){
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                let products = await getProducts(8);
-                if (products.success) {
-                    setProducts(products.results);
+                let wishlist = await getWishList();
+                if (wishlist.success) {
+                    console.log(wishlist.results)
+                    await Promise.all(wishlist.results.map(async (item) => {
+                        const product = await getProduct(item.id_product);
+                        console.log(product)
+                        setProducts(prevProducts => [...prevProducts, product.results]);
+                    }));
                 }
+            } catch (err) {
+                console.log(err)
             }
-            catch (err) {
-                setError(err)
-            }
+
         }
             fetchProduct();
     }, []);
+
+    useEffect(() => {
+        const user =  localStorage.getItem('currentUser')
+        if(user){
+            setUser(JSON.parse(user))
+        }
+    }, [])
 
     useEffect(() => {
         const handleSmoothScroll = () => {
@@ -73,16 +87,16 @@ export default function Page(){
 
     return (
         <div>
-            <div className='container flex flex-row items-center justify-between mx-auto'>
+            {user && (<div className='container flex flex-row items-center justify-between mx-auto'>
                 <div className='py-8 flex flex-col'>
-                    <span className='text-2xl font-semibold mb-2'>Charlotte Dupont</span>
+                    <span className='text-2xl font-semibold mb-2'>{user?.firstname} {user?.lastname}</span>
                     <div className='flex flex-row'>
                         <LocationOnIcon fontSize="small" />
-                        <span className='ml-1 text-sm'>12 Rue Anatole France, 92000 Nanterre</span>
+                        <span className='ml-1 text-sm'>{user?.address}, {user.zipcode} {user?.city}</span>
                     </div>
                     <div className='flex flex-row'>
                         <MailIcon fontSize="small" />
-                        <span className='ml-1 text-sm'>charlotte@gmail.com</span>
+                        <span className='ml-1 text-sm'>{user?.email}</span>
                     </div>
                 </div>
                 <div onClick={handleOpen} className="transition ease-in-out delay-150 mt-4 inline-flex items-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white">
@@ -103,7 +117,7 @@ export default function Page(){
                     </Typography>
                     </Box>
                 </Modal>
-            </div>
+            </div>)}
             <div id="wishlist" className="bg-slate-100 min-h-screen">
                 <div className='container mx-auto flex flex-col'>
                     <span className='text-3xl font-semibold mt-12 mb-8 text-start'>My wishlist</span>
@@ -116,18 +130,7 @@ export default function Page(){
                         products && (<div>
                             <ProductsCounter productsLength={products?.length} />
                             <ProductsGrid products={products} />
-                            <div className="flex justify-center mb-24">
-                                {
-                                    Number(8) <= products?.length && (
-                                        <Link
-                                            className="transition ease-in-out delay-150 mt-4 inline-flex items-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white"
-                                            href={`/shop?take=${(Number(take) + 8)}`}
-                                        >
-                                            See more
-                                        </Link>
-                                    )
-                                }
-                            </div>
+                            
                         </div>)
                     }
                     

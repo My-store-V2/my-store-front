@@ -17,3 +17,12 @@ export async function login(data) {
         console.log(error)
     }
 }
+
+export async function getUser() {
+    try {
+        const response = await api.get("/profil");
+        return response.data;
+    } catch (error) {
+        console.log(error)
+    }
+}

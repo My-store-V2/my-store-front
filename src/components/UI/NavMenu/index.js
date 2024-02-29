@@ -1,3 +1,4 @@
+import * as React from 'react';
 import Link from "next/link";
 
 const Index = ({menu, color}) => {
@@ -8,6 +9,8 @@ const Index = ({menu, color}) => {
     grey: "gray-900",
     white: "white"
   }
+
+
 
   return (
     <nav className='flex flex-row items-center'>

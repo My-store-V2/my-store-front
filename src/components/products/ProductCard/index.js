@@ -1,14 +1,42 @@
+'use client';
 import Link from 'next/link';
 import Image from 'next/image';
 import Checkbox from '@mui/material/Checkbox';
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
+import { addToWishList, deleteFromWishList } from "@/services/api/product.api.js";
+import { useState, useEffect } from 'react';
+
 
 const Index = ({ product }) => {
+    const [checked, setChecked] = useState(false);
+
+    const handleChange = (event) => {
+        setChecked(event.target.checked);
+        if(!checked) {
+            console.log(checked)
+            addToWishList({id_product: product.id})
+            .then((res) =>{
+                console.log(res);
+            }).catch((err) =>{
+                console.log(err);
+            })
+        } else {
+            deleteFromWishList(product.id)
+            .then((res) =>{
+                console.log(res);
+            }).catch((err) =>{
+                console.log(err);
+            })
+        }
+    };
+
     return (
         <div className="group/card max-w-sm bg-white rounded-lg relative">
             <div className="absolute top-2 right-2 z-40 bg-white p-0.5 rounded-full">
-                <Checkbox color="default" icon={<FavoriteBorder fontSize="small" />} checkedIcon={<Favorite fontSize="small" />} />
+                <Checkbox checked={checked}
+                    onChange={handleChange}
+                    color="default" icon={<FavoriteBorder fontSize="small" />} checkedIcon={<Favorite fontSize="small" />} />
             </div>
             <Link className="group/thumbnail thumbnail" href={`/shop/${product.id}`}>
                 <div className="overflow-hidden w-fill h-[300px] relative">
