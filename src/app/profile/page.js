@@ -16,11 +16,12 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import ProductsGrid from "@/components/products/ProductsGrid";
 import ProductsCounter from "@/components/products/ProductsCounter";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import Alert from "@/components/UI/Alert";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import Grid from '@mui/material/Grid';
 import { getWishList, getProduct } from "@/services/api/product.api.js";
 
 
@@ -29,7 +30,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: '50%',
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -44,6 +45,67 @@ export default function Page(){
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
+//     //Modifier un ou des champs dans la base de données
+//     let {data , loading, error, fetchData} = useFetch({url:`/user`,method:"PUT", body:userForm, token:token})
+
+//     //recuperer tous les informations de id venant de la base de données
+//     const {data: getUser , error: userError, loading:userLoading, fetchData:fetchDataUser } = useFetch({url:`/user`,method:"GET", body:null, token:token})
+
+//     useEffect(() => {
+//         setUserForm(user)
+//     }, [user]);
+
+//     //Si cela a bien modifié la base de données, le modal va se fermer
+//   useEffect(() => {
+//     if (fetchData.success) {
+//       setIsOpen(false);
+//       updateUser(fetchData.user)
+//     }
+//   }, [fetchData]);
+
+//   //Recuperer le token
+//   useEffect(() => {
+//     setToken(localStorage.getItem('token'))
+//   }, []);
+
+//   //Si token existe, on peut recuprer tous les infos
+//   useEffect(() => {
+//     if (token != null){
+//       fetchDataUser();
+//     }
+//   }, [token]);
+
+//   if (loading) return <Loading />
+//   if (error) console.log(error);
+
+//   //Remplir les champs de formulaire
+//   const handleChange = (e) => {
+//     console.log(userForm)
+//     setUserForm({ 
+//       ...userForm, 
+//       [e.target.name]: e.target.value 
+//     })
+//     if (e.target.name === "street"){
+//       userForm.address.street = e.target.value
+//     }
+//     if (e.target.name === "zipCode"){
+//       userForm.address.zipCode = e.target.value
+//     }
+//     if (e.target.name === "city"){
+//       userForm.address.city = e.target.value
+//     }
+//   }
+
+//   //Quand on clique le bouton, cela modifie le profil
+//   const submitForm = (e) => {
+//     e.preventDefault();
+//     fetchData();
+//     if (data) {
+//       alert ('Votre profil a bien été modifié ! Il faut bien recharger votre page pour bien afficher les informations.');
+//       setIsOpen(false);
+//     }
+//   }
+    
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -110,13 +172,84 @@ export default function Page(){
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description"
                 >
-                    <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Edit
+                    <Box sx={style} >
+                    <Typography id="server-modal-title" variant="h5" component="h2">
+                        My profile
                     </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                    </Typography>
+          
+                        <form>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        id="firstname"
+                                        label="Firstname"
+                                        variant="outlined"
+                                        margin="dense"
+                                        className=''
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        id="lastname"
+                                        className=""
+                                        label="Lastname"
+                                        variant="outlined"
+                                        margin="dense"
+                                        
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        id="Email"
+                                        className=""
+                                        label="Email"
+                                        variant="outlined"
+                                        margin="dense"
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        id="phone"
+                                        className=""
+                                        label="Phone"
+                                        variant="outlined"
+                                        margin="dense"
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        id="address"
+                                        className=""
+                                        label="Address"
+                                        variant="outlined"
+                                        margin="dense"
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        id="zipcode"
+                                        className=""
+                                        label="ZipCode"
+                                        variant="outlined"
+                                        margin="dense"
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        id="city"
+                                        className=""
+                                        label="City"
+                                        variant="outlined"
+                                        margin="dense"
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <div onClick={handleOpen} className="transition ease-in-out delay-150 mt-4 inline-flex items-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white">
+                                        Update profile
+                                    </div>
+                                </Grid>    
+                            </Grid>
+                        </form>
                     </Box>
                 </Modal>
             </div>)}
