@@ -9,12 +9,11 @@ import { useState, useEffect } from 'react';
 
 
 const Index = ({ product }) => {
-    const [checked, setChecked] = useState(false);
+    const [checked, setChecked] = useState(product.isFavorite);
 
     const handleChange = (event) => {
         setChecked(event.target.checked);
         if(!checked) {
-            console.log(checked)
             addToWishList({id_product: product.id})
             .then((res) =>{
                 console.log(res);

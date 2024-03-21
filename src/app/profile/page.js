@@ -49,12 +49,14 @@ export default function Page(){
             try {
                 let wishlist = await getWishList();
                 if (wishlist.success) {
-                    console.log(wishlist.results)
-                    await Promise.all(wishlist.results.map(async (item) => {
+                    const finalList = await Promise.all(wishlist.results.map(async (item) => {
                         const product = await getProduct(item.id_product);
-                        console.log(product)
-                        setProducts(prevProducts => [...prevProducts, product.results]);
+                        return {
+                            ...product.results,
+                            isFavorite: true // Assuming details is an object returned from the service call
+                        };
                     }));
+                    setProducts(finalList)
                 }
             } catch (err) {
                 console.log(err)

@@ -139,11 +139,11 @@ const Page = () => {
 
         if(res.success){
                 localStorage.setItem('storeToken', res.token);
-                await getUser()
-                .then((data) => {
-                    localStorage.setItem("currentUser", JSON.stringify(data.user))
+                const currentUser = await getUser()
+                if(currentUser){
+                    localStorage.setItem("currentUser", JSON.stringify(currentUser.user))
                     router.push("/shop");
-                })
+                }
             }
       })
     }
