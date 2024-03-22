@@ -48,7 +48,7 @@ export default function Page({
                 {
                     Number(take) <= products.length && (
                         <Link
-                            className="transition ease-in-out delay-150 mt-4 inline-flex items-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white"
+                            className="cursor-pointer transition ease-in-out delay-150 mt-4 inline-flex items-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white"
                             href={`/shop?take=${(Number(take) + 8)}`}
                         >
                             See more
