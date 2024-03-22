@@ -1,17 +1,19 @@
 "use client";
 import * as React from 'react'
-import Button from '@mui/material/Button'
+import {
+  TextField,
+  MenuItem,
+  FormControl,
+  Typography,
+  InputLabel,
+  InputAdornment,
+  FormHelperText,
+} from "@mui/material";
 import MailIcon from '@mui/icons-material/Mail';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import TextField from '@mui/material/TextField'
-import IconButton from '@mui/material/IconButton'
-import Link from '@mui/material/Link'
-import InputAdornment from '@mui/material/InputAdornment'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Checkbox from '@mui/material/Checkbox'
-import VisibilityOutlined from '@mui/icons-material/VisibilityOutlined'
-import VisibilityOffOutlined from '@mui/icons-material/VisibilityOffOutlined'
 import * as Yup from 'yup'
+import PropTypes from 'prop-types';
+import Select from "@mui/material/Select";
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import ProductsGrid from "@/components/products/ProductsGrid";
@@ -19,15 +21,14 @@ import ProductsCounter from "@/components/products/ProductsCounter";
 import { useState, useEffect, useContext } from 'react';
 import Alert from "@/components/UI/Alert";
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { getWishList, getProduct } from "@/services/api/product.api.js";
 import Grid from '@mui/material/Grid';
-
-
-import Grid from '@mui/material/Grid';
-import { getWishList, getProduct } from "@/services/api/product.api.js";
-
+import { IMaskInput } from 'react-imask';
+import { useRouter } from 'next/navigation'
+import { getCityByCode } from "../../services/api/global.api";
+import { editUser, getUser } from "../../services/api/auth.api";
+import PhoneIcon from '@mui/icons-material/Phone';
 
 const style = {
   position: 'absolute',
@@ -41,6 +42,26 @@ const style = {
   p: 4,
 };
 
+const TextMaskCustom = React.forwardRef(function TextMaskCustom(props, ref) {
+  const { onChange, ...other } = props;
+  return (
+    <IMaskInput
+      {...other}
+      mask="0 00 00 00 00"
+      definitions={{
+        '#': /[1-9]/,
+      }}
+      inputRef={ref}
+      onAccept={(value) => onChange({ target: { name: props.name, value } })}
+      overwrite
+    />
+  );
+});
+
+TextMaskCustom.propTypes = {
+  name: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
 export default function Page(){
 
     const [products, setProducts] = useState([]);
@@ -49,66 +70,70 @@ export default function Page(){
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-//     //Modifier un ou des champs dans la base de données
-//     let {data , loading, error, fetchData} = useFetch({url:`/user`,method:"PUT", body:userForm, token:token})
+    const router = useRouter();
+    const [alert, setAlert] = React.useState(null);
+    const [cities, setCities] = React.useState([]);
+    const [city, setCity] = React.useState("");
+    const [validCode, setValidCode] = React.useState(false);
 
-//     //recuperer tous les informations de id venant de la base de données
-//     const {data: getUser , error: userError, loading:userLoading, fetchData:fetchDataUser } = useFetch({url:`/user`,method:"GET", body:null, token:token})
 
-//     useEffect(() => {
-//         setUserForm(user)
-//     }, [user]);
+  const phoneRegExp = /^\d{1}\s\d{2}\s\d{2}\s\d{2}\s\d{2}$|^$/;
+  const postalRegExp = /^\d{5}$|^$/;
 
-//     //Si cela a bien modifié la base de données, le modal va se fermer
-//   useEffect(() => {
-//     if (fetchData.success) {
-//       setIsOpen(false);
-//       updateUser(fetchData.user)
-//     }
-//   }, [fetchData]);
+  const schema = Yup.object().shape({
+      lastname: Yup.string().required("Lastname required"),
+      firstname: Yup.string().required("Firstname required"),
+      email: Yup.string()
+      .required("Email required")
+      .email('Enter a valid email address'),
+      phone: Yup.string().matches(phoneRegExp, "Enter a valid phone number"),
+      address: Yup.string(),
+      zipcode: Yup.string().matches(postalRegExp, "Enter a valid postal code"),
+      city: Yup.string(),
+  })
 
-//   //Recuperer le token
-//   useEffect(() => {
-//     setToken(localStorage.getItem('token'))
-//   }, []);
+  const {
+    register,
+    getValues,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  })
 
-//   //Si token existe, on peut recuprer tous les infos
-//   useEffect(() => {
-//     if (token != null){
-//       fetchDataUser();
-//     }
-//   }, [token]);
+   const handleCity = (event) => {
+    setCity(event.target.value);
+  };
 
-//   if (loading) return <Loading />
-//   if (error) console.log(error);
+  const handleCodePostal = async (code,e) => {
+    getCityByCode(code)
+    .then((response) => {
+        if (!response.code) {
+          setCities(response);
+        } else {
+          setCities([]);
+        }
+    })
+    .catch((e) => {
+        console.log(e);
+    });
+  };
+  const onSubmit = async (data) => {
+      editUser(data)
+      .then(async (res) => {
+        setAlert({type:res.success ? "success" : "error", message: res.message})
 
-//   //Remplir les champs de formulaire
-//   const handleChange = (e) => {
-//     console.log(userForm)
-//     setUserForm({ 
-//       ...userForm, 
-//       [e.target.name]: e.target.value 
-//     })
-//     if (e.target.name === "street"){
-//       userForm.address.street = e.target.value
-//     }
-//     if (e.target.name === "zipCode"){
-//       userForm.address.zipCode = e.target.value
-//     }
-//     if (e.target.name === "city"){
-//       userForm.address.city = e.target.value
-//     }
-//   }
-
-//   //Quand on clique le bouton, cela modifie le profil
-//   const submitForm = (e) => {
-//     e.preventDefault();
-//     fetchData();
-//     if (data) {
-//       alert ('Votre profil a bien été modifié ! Il faut bien recharger votre page pour bien afficher les informations.');
-//       setIsOpen(false);
-//     }
-//   }
+        if(res.success){
+                const currentUser = await getUser()
+                if(currentUser){
+                    localStorage.setItem("currentUser", JSON.stringify(currentUser.user))
+                    setUser(currentUser.user)
+                    handleClose()
+                }
+            }
+      })
+  }
     
     useEffect(() => {
         const fetchProduct = async () => {
@@ -133,9 +158,18 @@ export default function Page(){
     }, []);
 
     useEffect(() => {
-        const user =  localStorage.getItem('currentUser')
+        const user =  JSON.parse(localStorage.getItem('currentUser'))
         if(user){
-            setUser(JSON.parse(user))
+            setUser(user)
+            setValue('firstname', user.firstname);
+            setValue('lastname', user.lastname);
+            setValue('address', user.address);
+            setValue('phone', user.phone);
+            setValue('email', user.email);
+            setValue('zipcode', user.zipcode);
+            handleCodePostal(user.zipcode)
+            setValue('city', user.city);
+            setCity(user.city)
         }
     }, [])
 
@@ -158,16 +192,20 @@ export default function Page(){
             {user && (<div className='container flex flex-row items-center justify-between mx-auto'>
                 <div className='py-8 flex flex-col'>
                     <span className='text-2xl font-semibold mb-2'>{user?.firstname} {user?.lastname}</span>
-                    <div className='flex flex-row'>
+                    <div className='flex flex-row mb-1'>
                         <LocationOnIcon fontSize="small" />
                         <span className='ml-1 text-sm'>{user?.address}, {user.zipcode} {user?.city}</span>
                     </div>
-                    <div className='flex flex-row'>
+                    <div className='flex flex-row mb-1'>
                         <MailIcon fontSize="small" />
                         <span className='ml-1 text-sm'>{user?.email}</span>
                     </div>
+                    <div className='flex flex-row'>
+                        <PhoneIcon fontSize="small" />
+                        <span className='ml-1 text-sm'>{user?.phone}</span>
+                    </div>
                 </div>
-                <div onClick={handleOpen} className="transition ease-in-out delay-150 mt-4 inline-flex items-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white">
+                <div onClick={handleOpen} className="cursor-pointer transition ease-in-out delay-150 mt-4 inline-flex items-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white">
                     Edit profile
                 </div>
                 <Modal
@@ -180,75 +218,126 @@ export default function Page(){
                     <Typography id="server-modal-title" variant="h5" component="h2">
                         My profile
                     </Typography>
-          
                         <form>
                             <Grid container spacing={2}>
                                 <Grid item xs={6}>
                                     <TextField
+                                        required
                                         id="firstname"
                                         label="Firstname"
                                         variant="outlined"
                                         margin="dense"
-                                        className=''
+                                        className='w-full'
+                                        helperText={errors.firstname?.message}
+                                        error={errors.firstname ? true : false}
+                                        {...register('firstname')}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
                                     <TextField
+                                        required
                                         id="lastname"
-                                        className=""
                                         label="Lastname"
                                         variant="outlined"
                                         margin="dense"
-                                        
+                                        className='w-full'
+                                        helperText={errors.lastname?.message}
+                                        error={errors.lastname ? true : false}
+                                        {...register('lastname')}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
                                     <TextField
-                                        id="Email"
-                                        className=""
+                                        required
+                                        id="email"
                                         label="Email"
                                         variant="outlined"
                                         margin="dense"
+                                        className='w-full'
+                                        helperText={errors.email?.message}
+                                        error={errors.email ? true : false}
+                                        {...register('email')}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
                                     <TextField
-                                        id="phone"
-                                        className=""
-                                        label="Phone"
-                                        variant="outlined"
-                                        margin="dense"
-                                    />
+                                    id="phone"
+                                    label="Phone number"
+                                    variant="outlined"
+                                    margin="dense"
+                                    className='w-full'
+                                    InputProps={{
+                                    startAdornment: <InputAdornment position="start">+33</InputAdornment>,
+                                    inputComponent: TextMaskCustom
+                                    }}
+                                    helperText={errors.phone?.message}
+                                    error={errors.phone ? true : false}
+                                    {...register('phone')}
+                                />
                                 </Grid>
                                 <Grid item xs={6}>
                                     <TextField
                                         id="address"
-                                        className=""
                                         label="Address"
                                         variant="outlined"
                                         margin="dense"
+                                        className='w-full'
+                                        helperText={errors.address?.message}
+                                        error={errors.address ? true : false}
+                                        {...register('address')}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
                                     <TextField
                                         id="zipcode"
-                                        className=""
-                                        label="ZipCode"
+                                        label="Postal code"
                                         variant="outlined"
                                         margin="dense"
+                                        className='w-full'
+                                        helperText={errors.zipcode?.message}
+                                        error={errors.zipcode ? true : false}
+                                        {...register('zipcode', {
+                                            onChange: () =>
+                                            handleCodePostal(getValues("zipcode")),
+                                        })}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <TextField
-                                        id="city"
-                                        className=""
+                                    <FormControl fullWidth sx={{ textAlign: "start" }} margin="dense">
+                                        <InputLabel id="demo-simple-select-label">City</InputLabel>
+                                        <Select
                                         label="City"
-                                        variant="outlined"
-                                        margin="dense"
-                                    />
+                                        id="city"
+                                        autoComplete="city"
+                                        {...register("city", {
+                                            onChange: (e) => {
+                                            handleCity(e);
+                                            },
+                                        })}
+                                        error={errors.city ? true : false}
+                                        value={city}
+                                        >
+                                        {Array.from(cities).map((item, index) => (
+                                            <MenuItem value={item.nomCommune} key={index}>
+                                            {item.nomCommune}
+                                            </MenuItem>
+                                        ))}
+                                        </Select>
+                                        {errors.city ? (!validCode ? (
+                                        <FormHelperText error id="component-error-text">
+                                            Enter a valid postal code
+                                        </FormHelperText>
+                                        ) : (
+                                        <FormHelperText error id="component-error-text">
+                                            {errors.city.message}
+                                        </FormHelperText>
+                                        )) : (
+                                        ""
+                                        )}
+                                    </FormControl>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <div onClick={handleOpen} className="transition ease-in-out delay-150 mt-4 inline-flex items-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white">
+                                    <div onClick={handleSubmit(onSubmit)} className="cursor-pointer transition ease-in-out delay-150 mt-4 inline-flex items-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white">
                                         Update profile
                                     </div>
                                 </Grid>    
