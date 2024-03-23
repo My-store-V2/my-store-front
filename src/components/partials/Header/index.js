@@ -15,12 +15,15 @@ import { useState, useEffect } from 'react';
 import { getWishList } from "@/services/api/product.api.js";
 
 
+
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
     right: -2,
-    top: 6,
+    top: 5,
     border: `2px solid ${theme.palette.background.paper}`,
     padding: '0 4px',
+    color: 'white',
+    fontSize: '10px'
   },
 }));
 
@@ -79,17 +82,19 @@ const Index = () => {
                     <Divider orientation="vertical" variant="middle" flexItem />
                     <div className='flex flex-row items-center'>
                         <Link href="/profile#wishlist">
-                        <IconButton aria-label="cart" className="ml-6 mr-2">
-                            <StyledBadge badgeContent={wishlistLength} color="info">
-                                <FavoriteBorderIcon />
-                            </StyledBadge>
-                        </IconButton>
+                            <IconButton aria-label="cart" className="ml-6 mr-2">
+                                <StyledBadge badgeContent={wishlistLength} color="primary">
+                                    <FavoriteBorderIcon />
+                                </StyledBadge>
+                            </IconButton>
                         </Link>
-                        <IconButton aria-label="cart" className="mx-2">
-                            <StyledBadge badgeContent={4} color="info">
+                        <Link href="/cart">
+                            <IconButton aria-label="cart" className="mx-2">
+                            <StyledBadge badgeContent={4} color="primary">
                                 <ShoppingCartIcon />
                             </StyledBadge>
                         </IconButton>
+                        </Link>
                         <IconButton 
                         size="large"
                         aria-controls={open ? 'basic-menu' : undefined}

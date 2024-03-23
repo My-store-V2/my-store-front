@@ -24,6 +24,11 @@ const theme = createTheme({
     fontFamily: "Work Sans",
     fontSize: 16,
   },
+  palette: {
+    primary: {
+      main: 'rgb(100 116 139);',
+    },
+  },
 });
 
 export default function RootLayout({ children }) {
