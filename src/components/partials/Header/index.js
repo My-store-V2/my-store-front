@@ -13,8 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import { useState, useEffect } from 'react';
 import { getWishList } from "@/services/api/product.api.js";
-
-
+import { getCartItems } from '../../../utils/cart';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -31,7 +30,7 @@ const Index = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
     const [wishlistLength, setWishlistLength] = useState(0);
-    
+    const [cartLength, setCartLength] = useState(0);
 
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -40,6 +39,14 @@ const Index = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    useEffect(() => {
+        const fetchCartItems = async () => {
+            const items = await getCartItems(); // Retrieve cart items from Async Storage
+            setCartLength(items.length);
+        };
+        fetchCartItems();
+    }, []);
 
       const logout = () => {
         localStorage.removeItem('storeToken');
@@ -66,7 +73,9 @@ const Index = () => {
             }
 
         }
+        if(isConnected){
             fetchProduct();
+        }
     }, []);
 
     return (
@@ -81,19 +90,21 @@ const Index = () => {
                     <NavMenu menu={menu} color="grey" />
                     <Divider orientation="vertical" variant="middle" flexItem />
                     <div className='flex flex-row items-center'>
-                        <Link href="/profile#wishlist">
-                            <IconButton aria-label="cart" className="ml-6 mr-2">
-                                <StyledBadge badgeContent={wishlistLength} color="primary">
-                                    <FavoriteBorderIcon />
+                        { isConnected && (
+                                <Link href="/profile#wishlist">
+                                    <IconButton aria-label="cart" className="ml-6 mr-2">
+                                        <StyledBadge badgeContent={wishlistLength} color="primary">
+                                            <FavoriteBorderIcon />
+                                        </StyledBadge>
+                                    </IconButton>
+                                </Link>
+                            )}
+                        <Link href="/cart">
+                                <IconButton aria-label="cart" className="mx-2">
+                                <StyledBadge badgeContent={cartLength} color="primary">
+                                    <ShoppingCartIcon />
                                 </StyledBadge>
                             </IconButton>
-                        </Link>
-                        <Link href="/cart">
-                            <IconButton aria-label="cart" className="mx-2">
-                            <StyledBadge badgeContent={4} color="primary">
-                                <ShoppingCartIcon />
-                            </StyledBadge>
-                        </IconButton>
                         </Link>
                         <IconButton 
                         size="large"
@@ -118,20 +129,20 @@ const Index = () => {
                             </Menu>
                             )}
 
-                            { !isConnected && (
-                            <Menu
-                                id="basic-menu"
-                                anchorEl={anchorEl}
-                                open={open}
-                                onClose={handleClose}
-                                MenuListProps={{
-                                'aria-labelledby': 'basic-button',
-                                }}
-                            >
-                                <MenuItem onClick={handleClose}><Link href='/register'>Register</Link>
-                                </MenuItem><MenuItem onClick={handleClose}><Link href='/login'>Login</Link></MenuItem>
-                            </Menu>
-                            )}
+                        { !isConnected && (
+                        <Menu
+                            id="basic-menu"
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                            MenuListProps={{
+                            'aria-labelledby': 'basic-button',
+                            }}
+                        >
+                            <MenuItem onClick={handleClose}><Link href='/register'>Register</Link>
+                            </MenuItem><MenuItem onClick={handleClose}><Link href='/login'>Login</Link></MenuItem>
+                        </Menu>
+                        )}
                     </div>
                 </li>
             </ul>

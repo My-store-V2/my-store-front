@@ -10,8 +10,24 @@ import visa from '../../../public/visa.svg'
 import { getProducts } from "@/services/api/product.api.js";
 import { useState, useEffect } from 'react';
 import ProductCartCard from "@/components/products/ProductCartCard";
+import { getCartItems } from '../../utils/cart';
+
 export default function Page() {
     const [products, setProducts] = useState([]);
+    const [cartItems, setCartItems] = useState([]);
+
+    useEffect(() => {
+        const fetchCartItems = async () => {
+            const items = await getCartItems(); // Retrieve cart items from Async Storage
+            setCartItems(items);
+        };
+        fetchCartItems();
+    }, []);
+
+    const handleDelete = (id) => {
+        setCartItems(cartItems.filter(item => item.id !== id));
+    };
+
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -30,7 +46,7 @@ export default function Page() {
     return (
         <div className="container mx-auto">
             <TitlePage title="Shopping cart" />
-            <ProductsCounter productsLength={products.length} />
+            <ProductsCounter productsLength={cartItems.length} />
             <div className="min-h-screen flex flex-row py-4">
                 <div className="w-full mr-14 flex flex-col">
                     <div className="flex flex-row w-full">
@@ -39,8 +55,8 @@ export default function Page() {
                         <div className="basis-1/6">Price</div>
                         <div className="basis-1/4">Total</div>
                     </div>
-                    {products.map(product => (
-                        <ProductCartCard key={product.id} product={product} />
+                    {cartItems.map(product => (
+                        <ProductCartCard key={product.id} product={product} onDelete={handleDelete} />
                     ))}
                 </div>
                 <div className="border border-slate-300 w-96 h-fit p-3">

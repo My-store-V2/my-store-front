@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import IconButton from '@mui/material/IconButton';
 import WarningIcon from '@mui/icons-material/Warning';
+import { getCartItems, setCartItems, addItemToCart } from '../../../utils/cart';
 
 const style = {
     position: 'absolute',
@@ -27,7 +28,7 @@ const style = {
 };
 
 const Index = ({ product }) => {
-    const [checked, setChecked] = useState(product.isFavorite);
+    const [checked, setChecked] = useState(product.isFavorite || false);
     const [selectedChip, setSelectedChip] = useState(null);
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -63,9 +64,21 @@ const Index = ({ product }) => {
         }
     };
 
-    const addToCart = () => {
+    const addToCart = async (product) => {
         if(selectedChip === null){
             setOpen(true)
+        } else{
+            const cartItems = await getCartItems(); // Retrieve cart items
+            let updatedCart = [...cartItems];
+            const existingItemIndex = updatedCart.findIndex(item => item.id === product.id && item.size === selectedChip);
+            if (existingItemIndex !== -1) {
+                updatedCart[existingItemIndex].quantity += 1;
+                setCartItems(updatedCart);
+            } else {
+                product.size=selectedChip
+                product.quantity=1
+                await addItemToCart(product);
+            }
         }
     }
 
@@ -132,7 +145,7 @@ const Index = ({ product }) => {
                         </Link>
                     </div>
                     <div className="cursor-pointer transition ease-in-out delay-150 mt-4 inline-flex items-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white"
-                        onClick={addToCart}>
+                        onClick={() => addToCart(product)}>
                         Add to cart
                     </div>
                 </div>
