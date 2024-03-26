@@ -11,9 +11,9 @@ import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { getWishList } from "@/services/api/product.api.js";
-import { getCartItems } from '../../../utils/cart';
+import CartContext from '../../../context/cart';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -30,7 +30,7 @@ const Index = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
     const [wishlistLength, setWishlistLength] = useState(0);
-    const [cartLength, setCartLength] = useState(0);
+    const { cartItems } = useContext(CartContext);
 
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -39,14 +39,6 @@ const Index = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
-
-    useEffect(() => {
-        const fetchCartItems = async () => {
-            const items = await getCartItems(); // Retrieve cart items from Async Storage
-            setCartLength(items.length);
-        };
-        fetchCartItems();
-    }, []);
 
       const logout = () => {
         localStorage.removeItem('storeToken');
@@ -101,7 +93,7 @@ const Index = () => {
                             )}
                         <Link href="/cart">
                                 <IconButton aria-label="cart" className="mx-2">
-                                <StyledBadge badgeContent={cartLength} color="primary">
+                                <StyledBadge badgeContent={cartItems.length} color="primary">
                                     <ShoppingCartIcon />
                                 </StyledBadge>
                             </IconButton>

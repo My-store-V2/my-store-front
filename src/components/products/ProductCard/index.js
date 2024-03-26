@@ -5,14 +5,14 @@ import Checkbox from '@mui/material/Checkbox';
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
 import { addToWishList, deleteFromWishList } from "@/services/api/product.api.js";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import SelectableChip from '@/components/products/SelectableChip'
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import IconButton from '@mui/material/IconButton';
 import WarningIcon from '@mui/icons-material/Warning';
-import { getCartItems, setCartItems, addItemToCart } from '../../../utils/cart';
+import CartContext from '../../../context/cart';
 
 const style = {
     position: 'absolute',
@@ -33,6 +33,7 @@ const Index = ({ product }) => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const { addItemToCart } = useContext(CartContext);
     const chips = [
         { id: 1, label: 'XS' },
         { id: 2, label: 'S' },
@@ -68,17 +69,7 @@ const Index = ({ product }) => {
         if(selectedChip === null){
             setOpen(true)
         } else{
-            const cartItems = await getCartItems(); // Retrieve cart items
-            let updatedCart = [...cartItems];
-            const existingItemIndex = updatedCart.findIndex(item => item.id === product.id && item.size === selectedChip);
-            if (existingItemIndex !== -1) {
-                updatedCart[existingItemIndex].quantity += 1;
-                setCartItems(updatedCart);
-            } else {
-                product.size=selectedChip
-                product.quantity=1
-                await addItemToCart(product);
-            }
+            addItemToCart(product);
         }
     }
 

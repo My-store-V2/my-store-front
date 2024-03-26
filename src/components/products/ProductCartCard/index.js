@@ -3,13 +3,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import IconButton from '@mui/material/IconButton';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import SelectableChip from '@/components/products/SelectableChip'
-import { removeItemFromCart } from '../../../utils/cart';
+import CartContext from '../../../context/cart';
 
 const Index = ({ product, onDelete }) => {
     const [quantity, setQuantity] = useState(product.quantity);
     const [selectedChip, setSelectedChip] = useState(product.size);
+    const { removeItemFromCart } = useContext(CartContext);
     const chips = [
         { id: 1, label: 'XS' },
         { id: 2, label: 'S' },
@@ -33,7 +34,7 @@ const Index = ({ product, onDelete }) => {
     };
 
     const handleRemoveFromCart = async (itemId) => {
-        await removeItemFromCart(itemId);
+        removeItemFromCart(itemId);
         onDelete(itemId)
     };
 

@@ -8,6 +8,8 @@ import '../../public/fonts/Font.css';
 import { usePathname } from 'next/navigation';
 import { DM_Serif_Display, Work_Sans } from 'next/font/google';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { CartProvider } from '../context/cart';
+
 
 const dm_serif_display = DM_Serif_Display({
     subsets: ['latin'],
@@ -54,11 +56,13 @@ export default function RootLayout({ children }) {
         <ThemeProvider theme={theme}>
             <html lang="en">
                 <body className={`${dm_serif_display.className} ${work_sans.className}`}>
-                    {header}
-                    <main>
-                        {children}
-                    </main>
-                    <Footer />
+                    <CartProvider>
+                        {header}
+                        <main>
+                            {children}
+                        </main>
+                        <Footer />
+                    </CartProvider>
                 </body>
             </html>
         </ThemeProvider>
