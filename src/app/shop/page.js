@@ -14,22 +14,30 @@ export default function Page({
     const [products, setProducts] = useState([]);
     const { take = 8 } = searchParams || {};
 
+
     useEffect(() => {
         const fetchProduct = async () => {
             try {
                 const productsList = await getProducts(take);
-                let wishlist = [];
-                wishlist = await getWishList();
-                if (wishlist.success) {
-                    const wishlistId = wishlist.results.map((x) => x.id_product);
-                    const finalList = productsList.results.map((x) => {
-                        const isFavorite = x.isFavorite = wishlistId.includes(x.id)
-                        const obj = x
-                        obj.isFavorite = isFavorite
-                        return obj
-                    });
+                const isConnected =  localStorage.getItem('currentUser') ? true : false
+                if(isConnected) {
+                    let wishlist = [];
+                    wishlist = await getWishList();
+                    if (wishlist.success) {
+                        const wishlistId = wishlist.results.map((x) => x.id_product);
+                        const finalList = productsList.results.map((x) => {
+                            const isFavorite = x.isFavorite = wishlistId.includes(x.id)
+                            const obj = x
+                            obj.isFavorite = isFavorite
+                            return obj
+                        });
 
-                    setProducts(finalList)
+                        setProducts(finalList)
+                    }
+                } else{
+                    if (productsList.success) {
+                        setProducts(productsList.results)
+                    }
                 }
             } catch (err) {
                 console.log(err)
