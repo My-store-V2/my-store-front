@@ -4,8 +4,10 @@ import { getProducts, getWishList } from "@/services/api/product.api.js";
 import Alert from "@/components/UI/Alert";
 import ProductsGrid from "@/components/products/ProductsGrid";
 import TitlePage from "@/components/UI/TitlePage";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import ProductsCounter from "@/components/products/ProductsCounter";
+import CartContext from '../../context/cart';
+
 
 export default function Page({
     searchParams,
@@ -13,13 +15,12 @@ export default function Page({
 
     const [products, setProducts] = useState([]);
     const { take = 8 } = searchParams || {};
-
+    const { isConnected } = useContext(CartContext);
 
     useEffect(() => {
         const fetchProduct = async () => {
             try {
                 const productsList = await getProducts(take);
-                const isConnected =  localStorage.getItem('currentUser') ? true : false
                 if(isConnected) {
                     let wishlist = [];
                     wishlist = await getWishList();

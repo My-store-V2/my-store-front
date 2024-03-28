@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react';
+import { useContext } from 'react';
 import {
   Button,
   TextField,
@@ -29,6 +30,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { getCityByCode } from "../../services/api/global.api";
 import { signUp, getUser } from "../../services/api/auth.api";
 import { useRouter } from 'next/navigation'
+import CartContext from '../../context/cart';
+
 
 const TextMaskCustom = React.forwardRef(function TextMaskCustom(props, ref) {
   const { onChange, ...other } = props;
@@ -53,6 +56,7 @@ TextMaskCustom.propTypes = {
 
 const Page = () => {
   const router = useRouter();
+  const { setIsConnected } = useContext(CartContext);
   const [alert, setAlert] = React.useState(null);
   const [cities, setCities] = React.useState([]);
   const [city, setCity] = React.useState("");
@@ -142,6 +146,7 @@ const Page = () => {
                 const currentUser = await getUser()
                 if(currentUser){
                     localStorage.setItem("currentUser", JSON.stringify(currentUser.user))
+                    setIsConnected(true)
                     router.push("/shop");
                 }
             }
