@@ -7,42 +7,62 @@ import paypal from '../../../public/paypal.svg'
 import stripe from '../../../public/stripe.svg'
 import mastercard from '../../../public/mastercard.svg'
 import visa from '../../../public/visa.svg'
-import { getProducts } from "@/services/api/product.api.js";
 import { useState, useEffect, useContext } from 'react';
 import ProductCartCard from "@/components/products/ProductCartCard";
 import CartContext from '../../context/cart';
-import empty from '../../../public/empty.svg'
+import empty from '../../../public/empty.svg';
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 export default function Page() {
-    const [products, setProducts] = useState([]);
     const { cartItems } = useContext(CartContext);
     const [items, setCartItems] = useState([]);
+    const [total, setTotal] = useState(0);
+    const taxRate = 0.02;
+
+    useEffect(() => {
+        const calculateTotal = () => {
+            let totalPrice = 0;
+            if(cartItems){
+                cartItems.forEach(item => {
+                    totalPrice += item.products.price * item.quantity;
+                });
+                setTotal(totalPrice);
+            }
+        };
+
+        calculateTotal();
+    }, [cartItems]);
+
+    const calculateTax = () => {
+        return total * taxRate;
+    };
 
 
-    const handleDelete = (id) => {
-        setCartItems(items.filter(item => item.id !== id));
+    const handleDelete = (product) => {
+        setCartItems(items.filter(item => item.id !== product.id));
     };
 
     useEffect(() => {
-        const fetchProduct = async () => {
+        const fetchProducts = async () => {
             try {
-                console.log(cartItems)
                 setCartItems(cartItems)
-                const productsList = await getProducts(8);
-                if (productsList.success) {
-                    setProducts(productsList.results)
-                }
             } catch (err) {
                 console.log(err)
             }
 
         }
-            fetchProduct();
+            fetchProducts();
     }, []);
     return (
         <div className="container mx-auto">
             <TitlePage title="Shopping cart" />
-            {cartItems.length !== 0 && (
+            {cartItems === null && (
+                <div className="min-h-screen flex flex-row py-4">
+                    <CircularProgress />
+                </div>
+            )}
+            {cartItems && cartItems.length > 0 && (
                 <><ProductsCounter productsLength={cartItems.length} /><div className="min-h-screen flex flex-row py-4">
                         <div className="w-full mr-14 flex flex-col">
                             <div className="flex flex-row w-full">
@@ -60,15 +80,15 @@ export default function Page() {
                             <div className="py-3">
                                 <div className="flex justify-between mb-1">
                                     <span className="text-slate-500">Subtotal</span>
-                                    <span>320 €</span>
+                                    <span>{total} €</span>
                                 </div>
                                 <div className="flex justify-between mb-1">
-                                    <span className="text-slate-500">Tax</span>
-                                    <span>3 €</span>
+                                    <span className="text-slate-500">Tax ({(taxRate * 100).toFixed(2)}%)</span>
+                                    <span>{calculateTax().toFixed(2)} €</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-slate-500">Total</span>
-                                    <span>323 €</span>
+                                    <span>{(total + calculateTax()).toFixed(2)} €</span>
                                 </div>
                             </div>
                             <div className="cursor-pointer w-full transition ease-in-out delay-150 mt-4 inline-flex justify-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white">
@@ -86,7 +106,7 @@ export default function Page() {
                         </div>
                     </div></>
             )}
-            {cartItems.length === 0 && (
+            {cartItems && cartItems.length === 0 && (
                 <Image className="mx-auto my-5" src={empty} alt="empty" width={300} height={400}></Image>
             )}
         </div>

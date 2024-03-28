@@ -69,7 +69,10 @@ const Index = ({ product }) => {
         if(selectedChip === null){
             setOpen(true)
         } else{
-            addItemToCart(product);
+            let item = {}
+            item.size = selectedChip
+            item.products = product
+            addItemToCart(item);
         }
     }
 
