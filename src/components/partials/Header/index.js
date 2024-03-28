@@ -28,10 +28,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const Index = () => {
     const [anchorEl, setAnchorEl] = useState(null);
-    const [isConnected, setIsConnected] = useState(false);
+    const { cartItems, setIsConnected, isConnected } = useContext(CartContext);
     const [wishlistLength, setWishlistLength] = useState(0);
-    const { cartItems } = useContext(CartContext);
-
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -43,15 +41,9 @@ const Index = () => {
       const logout = () => {
         localStorage.removeItem('storeToken');
         localStorage.removeItem('currentUser');
+        setIsConnected(false);
         handleClose();
     }
-
-    useEffect(() => {
-        const item =  localStorage.getItem('currentUser') ? true : false
-        if(item){
-        setIsConnected(item)
-        }
-    }, [])
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -93,7 +85,7 @@ const Index = () => {
                             )}
                         <Link href="/cart">
                                 <IconButton aria-label="cart" className="mx-2">
-                                <StyledBadge badgeContent={cartItems.length} color="primary">
+                                <StyledBadge badgeContent={cartItems ? cartItems.length : 0} color="primary">
                                     <ShoppingCartIcon />
                                 </StyledBadge>
                             </IconButton>

@@ -10,7 +10,7 @@ import CartContext from '../../../context/cart';
 const Index = ({ product, onDelete }) => {
     const [quantity, setQuantity] = useState(product.quantity);
     const [selectedChip, setSelectedChip] = useState(product.size);
-    const { removeItemFromCart } = useContext(CartContext);
+    const { isConnected, addItemToCart, updateItemQuantity, removeItemFromCart, updateItemSize } = useContext(CartContext);
     const chips = [
         { id: 1, label: 'XS' },
         { id: 2, label: 'S' },
@@ -21,21 +21,38 @@ const Index = ({ product, onDelete }) => {
 
     const handleSelectChip = (chipId) => {
         setSelectedChip(chipId);
+        updateItemSize(product.id, chipId)
+    };
+
+    const handleQuantityChange = (item) => {
+        updateItemQuantity(item);
     };
 
     const increaseQuantity = () => {
         setQuantity(prevQuantity => prevQuantity + 1);
+        product.quantity = quantity + 1
+        if(isConnected){
+            addItemToCart(product);
+        } else{
+            handleQuantityChange(product)
+        }
     };
 
     const decreaseQuantity = () => {
         if (quantity > 1) {
             setQuantity(prevQuantity => prevQuantity - 1);
+            product.quantity = quantity - 1
+            if(isConnected){
+                removeItemFromCart(product);
+            } else{
+                handleQuantityChange(product)
+            }
         }
     };
 
-    const handleRemoveFromCart = async (itemId) => {
-        removeItemFromCart(itemId);
-        onDelete(itemId)
+    const handleRemoveFromCart = async (product) => {
+        removeItemFromCart(product);
+        onDelete(product)
     };
 
     return (
@@ -46,16 +63,16 @@ const Index = ({ product, onDelete }) => {
                         <div className="overflow-hidden w-fill w-[90px] h-[100px] relative">
                             <Image
                                 className="group-hover/thumbnail:opacity-100 group-hover/thumbnail:scale-105 transition ease-in-out delay-150"
-                                alt={product.name}
-                                src={product.thumbnail.includes('uploads') ? '' : product.thumbnail}
+                                alt={product.products.name}
+                                src={product.products.thumbnail.includes('uploads') ? '' : product.products.thumbnail}
                                 fill
                                 sizes="100%"
                                 style={{ objectFit: "cover" }}
                             />
                             <Image
                                 className="opacity-100 group-hover/thumbnail:scale-105 group-hover/thumbnail:opacity-0 transition ease-in-out delay-150"
-                                alt={product.name}
-                                src={product.packshot.includes('uploads') ? '' : product.packshot}
+                                alt={product.products.name}
+                                src={product.products.packshot.includes('uploads') ? '' : product.products.packshot}
                                 fill
                                 sizes="100%"
                                 style={{ objectFit: "cover" }}
@@ -63,7 +80,7 @@ const Index = ({ product, onDelete }) => {
                         </div>
                     </Link>
                     <div className="flex flex-col">
-                        <h2 className="text-md mb-2 text-lg">{product.name}</h2>
+                        <h2 className="text-md mb-2 text-lg">{product.products.name}</h2>
                         <div className="flex flex-wrap gap-1">
                             {chips.map(chip => (
                                 <SelectableChip
@@ -90,11 +107,11 @@ const Index = ({ product, onDelete }) => {
                     </div>
                 </div>
                 <div className="basis-1/6">
-                    <p className="font-semibold font-s">{product.price} €</p>
+                    <p className="font-semibold font-s">{product.products.price} €</p>
                 </div>
                 <div className="basis-1/4 flex flex-row justify-between items-center">
-                    <p className="font-semibold font-sm">{product.price * quantity} €</p>
-                    <IconButton aria-label="delete" onClick={() => handleRemoveFromCart(product.id)}>
+                    <p className="font-semibold font-sm">{product.products.price * quantity} €</p>
+                    <IconButton aria-label="delete" onClick={() => handleRemoveFromCart(product)}>
                         <DeleteOutlineIcon />
                     </IconButton>
                 </div>
