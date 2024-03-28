@@ -1,4 +1,5 @@
 'use client'
+import { checkout } from '@/services/api/order';
 import TextField from '@mui/material/TextField'
 import { useState } from 'react';
 
@@ -6,8 +7,8 @@ const Page = () => {
     const [isDelivery, setIsDelivery] = useState(true);
 
     const [userForm, setUserForm] = useState({
-        shipping_method: "",
-        address: "",
+        delivery_mode: "",
+        delivery_address: "",
     });
 
     const handleChange = (e) => {
@@ -17,7 +18,7 @@ const Page = () => {
 
     const submit = async (e) => {
         e.preventDefault();
-
+        // checkout(userForm)
         console.log("userform: ",userForm);
     };
 
@@ -28,7 +29,7 @@ const Page = () => {
 
                 <ul class="grid w-full gap-5 md:grid-cols-2">
                     <li>
-                        <input type="radio" name="shipping_method" id="delivery" value="delivery" checked={userForm.shipping_method === 'delivery'} onChange={(e)=> handleChange(e)} class="hidden peer" required />
+                        <input type="radio" name="delivery_mode" id="delivery" value="delivery" checked={userForm.delivery_mode === 'delivery'} onChange={(e)=> handleChange(e)} class="hidden peer" required />
                         <label for="delivery" class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-sm cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-black peer-checked:border-black peer-checked:text-black hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">                           
                             <div class="block">
                                 <div class="w-full text-l font-semibold">Delivery</div>
@@ -36,7 +37,7 @@ const Page = () => {
                         </label>
                     </li>
                     <li>
-                        <input type="radio" name="shipping_method" id="pick-up" value="pick-up"  checked={userForm.shipping_method === 'pick-up'} onChange={(e)=> handleChange(e)} class="hidden peer"/>
+                        <input type="radio" name="delivery_mode" id="pick-up" value="pick-up"  checked={userForm.delivery_mode === 'pick-up'} onChange={(e)=> handleChange(e)} class="hidden peer"/>
                         <label for="pick-up" class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-sm cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-black peer-checked:border-black peer-checked:text-black hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                             <div class="block">
                                 <div class="w-full text-l font-semibold">Pick-Up</div>
@@ -45,13 +46,13 @@ const Page = () => {
                     </li>
                 </ul>
                 {
-                    userForm.shipping_method === 'delivery' && (
+                    userForm.delivery_mode === 'delivery' && (
                         <div className="form-group">
                             <TextField
                                 label="Address"
-                                id="address"
-                                name="address"
-                                value={userForm.address}
+                                id="delivery_address"
+                                name="delivery_address"
+                                value={userForm.delivery_address}
                                 onChange={(e) => handleChange(e)}
                                 variant="outlined"
                                 margin="dense"
