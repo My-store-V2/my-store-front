@@ -4,15 +4,16 @@ import TextField from '@mui/material/TextField'
 import { useState } from 'react';
 
 const Page = () => {
-    const [isDelivery, setIsDelivery] = useState(true);
 
     const [userForm, setUserForm] = useState({
         delivery_mode: "",
         delivery_address: "",
+        delivery_city: "Nanterre",
+        delivery_zipcode : 92000,
+        products: [1, 3, 4, 6]
     });
 
     const handleChange = (e) => {
-        console.log("e",e)
         setUserForm({ ...userForm, [e.target.name]: e.target.value });
     };
 
@@ -20,7 +21,6 @@ const Page = () => {
         e.preventDefault();
         checkout(userForm)
         .then(async (res) => {
-            setAlert({type:"success", message: res.message})
             console.log(res)
         })
     };
