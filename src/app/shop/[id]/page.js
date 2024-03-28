@@ -8,6 +8,25 @@ import TitlePage from '@/components/UI/TitlePage';
 import ProductFancyBox from "@/components/products/ProductFancyBox";
 import Loader from "@/components/UI/Loader";
 import Alert from "@/components/UI/Alert";
+import SelectableChip from '@/components/products/SelectableChip'
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+import IconButton from '@mui/material/IconButton';
+import WarningIcon from '@mui/icons-material/Warning';
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+    display: 'flex',
+    alignItems: 'center'
+};
 export default function Page() {
 
     const { id } = useParams();
@@ -18,6 +37,46 @@ export default function Page() {
     const [slideIndex, setSlideIndex] = useState(0);
     const [showFancyBox, setShowFancyBox] = useState(false);
     const [error, setError] = useState(null);
+    const [selectedChip, setSelectedChip] = useState(null);
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const chips = [
+        { id: 1, label: 'XS' },
+        { id: 2, label: 'S' },
+        { id: 3, label: 'M' },
+        { id: 4, label: 'L' },
+        { id: 5, label: 'XL' }
+    ];
+
+    const handleSelectChip = (chipId) => {
+        setSelectedChip(chipId);
+    };
+
+    const handleChange = (event) => {
+        setChecked(event.target.checked);
+        if(!checked) {
+            addToWishList({id_product: product.id})
+            .then((res) =>{
+                console.log(res);
+            }).catch((err) =>{
+                console.log(err);
+            })
+        } else {
+            deleteFromWishList(product.id)
+            .then((res) =>{
+                console.log(res);
+            }).catch((err) =>{
+                console.log(err);
+            })
+        }
+    };
+
+    const addToCart = () => {
+        if(selectedChip === null){
+            setOpen(true)
+        }
+    }
 
      useEffect(() => {
         const fetchProduct = async () => {
@@ -144,7 +203,37 @@ export default function Page() {
                 <div className="content lg:flex-1 p-6">
                     <TitlePage title={product.name} />
                     <p className="mb-3 font-semibold text-lg">{product.price} €</p>
-                    <p className="leading-7">{product.description}</p>
+                    <p className="leading-7 mb-3">{product.description}</p>
+                    <Modal
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                    >
+                        <Box sx={style}>
+                            <IconButton aria-label="warning">
+                                <WarningIcon color='error' />
+                            </IconButton>
+                            <Typography id="modal-modal-description">
+                                Please choose a size
+                            </Typography>
+                        </Box>
+                    </Modal>
+                    <div className="flex flex-wrap gap-1">
+                        {chips.map(chip => (
+                            <SelectableChip
+                                key={chip.id}
+                                label={chip.label}
+                                onClick={handleOpen}
+                                isSelected={chip.id === selectedChip}
+                                onSelect={() => handleSelectChip(chip.id)}
+                            />
+                        ))}
+                    </div>
+                    <div className="cursor-pointer transition ease-in-out delay-150 mt-4 inline-flex items-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white"
+                        onClick={addToCart}>
+                        Add to cart
+                    </div>
                 </div>
             </div>
         </div>
