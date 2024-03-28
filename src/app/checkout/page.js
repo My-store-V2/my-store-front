@@ -18,8 +18,11 @@ const Page = () => {
 
     const submit = async (e) => {
         e.preventDefault();
-        // checkout(userForm)
-        console.log("userform: ",userForm);
+        checkout(userForm)
+        .then(async (res) => {
+            setAlert({type:"success", message: res.message})
+            console.log(res)
+        })
     };
 
     return(
