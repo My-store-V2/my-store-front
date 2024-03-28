@@ -26,3 +26,12 @@ export async function getUser() {
         console.log(error)
     }
 }
+
+export async function editUser(data) {
+    try {
+        const response = await api.put("/profil", data);
+        return response.data;
+    } catch (error) {
+        console.log(error)
+    }
+}
