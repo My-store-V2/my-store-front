@@ -15,7 +15,7 @@ const Page = () => {
         delivery_address: "",
         delivery_city: "Nanterre",
         delivery_zipcode: 92000,
-        products: [1, 3, 4, 6]
+        products: ["1", "3", "4", 6]
     });
 
     const handleChange = (e) => {
@@ -67,6 +67,28 @@ const Page = () => {
                                 id="delivery_address"
                                 name="delivery_address"
                                 value={userForm.delivery_address}
+                                onChange={(e) => handleChange(e)}
+                                variant="outlined"
+                                margin="dense"
+                                className='w-full'
+                                isRequired={true}
+                            />
+                            <TextField
+                                label="ville"
+                                id="delivery_city"
+                                name="delivery_city"
+                                value={userForm.delivery_city}
+                                onChange={(e) => handleChange(e)}
+                                variant="outlined"
+                                margin="dense"
+                                className='w-full'
+                                isRequired={true}
+                            />
+                            <TextField
+                                label="code postal"
+                                id="delivery_zipcode"
+                                name="delivery_zipcode"
+                                value={userForm.delivery_zipcode}
                                 onChange={(e) => handleChange(e)}
                                 variant="outlined"
                                 margin="dense"
