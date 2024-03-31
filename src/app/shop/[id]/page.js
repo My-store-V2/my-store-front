@@ -8,8 +8,25 @@ import TitlePage from '@/components/UI/TitlePage';
 import ProductFancyBox from "@/components/products/ProductFancyBox";
 import Loader from "@/components/UI/Loader";
 import Alert from "@/components/UI/Alert";
-import { getBase64 } from '../../../lib/base64';
+import SelectableChip from '@/components/products/SelectableChip'
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+import IconButton from '@mui/material/IconButton';
+import WarningIcon from '@mui/icons-material/Warning';
 
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+    display: 'flex',
+    alignItems: 'center'
+};
 export default function Page() {
 
     const { id } = useParams();
@@ -20,14 +37,54 @@ export default function Page() {
     const [slideIndex, setSlideIndex] = useState(0);
     const [showFancyBox, setShowFancyBox] = useState(false);
     const [error, setError] = useState(null);
+    const [selectedChip, setSelectedChip] = useState(null);
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const chips = [
+        { id: 1, label: 'XS' },
+        { id: 2, label: 'S' },
+        { id: 3, label: 'M' },
+        { id: 4, label: 'L' },
+        { id: 5, label: 'XL' }
+    ];
 
-    useEffect(() => {
+    const handleSelectChip = (chipId) => {
+        setSelectedChip(chipId);
+    };
+
+    const handleChange = (event) => {
+        setChecked(event.target.checked);
+        if(!checked) {
+            addToWishList({id_product: product.id})
+            .then((res) =>{
+                console.log(res);
+            }).catch((err) =>{
+                console.log(err);
+            })
+        } else {
+            deleteFromWishList(product.id)
+            .then((res) =>{
+                console.log(res);
+            }).catch((err) =>{
+                console.log(err);
+            })
+        }
+    };
+
+    const addToCart = () => {
+        if(selectedChip === null){
+            setOpen(true)
+        }
+    }
+
+     useEffect(() => {
         const fetchProduct = async () => {
             setLoading(true);
             try {
                 let product = await getProduct(id);
-                if (product) {
-                    setProduct(product.data);
+                if (product.success) {
+                    setProduct(product.results);
                 }
             }
             catch (err) {
@@ -44,11 +101,15 @@ export default function Page() {
 
     useEffect(() => {
         const fetchPlaceholderImage = async () => {
-            const placeholder = await getBase64(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${product.thumbnail}`);
-            setPlaceholderImage(placeholder);
-        }
+            try {
+                const placeholder = product.thumbnail;
+                setPlaceholderImage(placeholder);
+            } catch (error) {
+                console.error('Error fetching placeholder image:', error.message);
+            }
+            };
         if (product) {
-            setSelectedImage(product.thumbnail);
+            setSelectedImage(product?.thumbnail);
             fetchPlaceholderImage();
         }
     }, [product]);
@@ -89,7 +150,7 @@ export default function Page() {
             }
             <BreadCrumb current_page={product?.name} />
             <div className="flex">
-                <div className="thumbnail lg:flex-1">
+                {placehodlerImage && selectedImage ? <div className="thumbnail lg:flex-1">
                     <div
                         onClick={() => setShowFancyBox(true)}
                         className="group/show w-4/5 h-[550px] overflow-hidden cursor-pointer">
@@ -97,7 +158,7 @@ export default function Page() {
                             blurDataURL={placehodlerImage}
                             className="object-cover h-full w-full group-hover/show:scale-105 transition ease-in-out delay-150 z-1"
                             alt={product.name}
-                            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${selectedImage}`}
+                            src={selectedImage}
                             width={500}
                             height={500}
                         />
@@ -107,7 +168,7 @@ export default function Page() {
                             <Image
                                 className="cursor-pointer object-cover h-full w-full "
                                 alt={product.name}
-                                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${product.thumbnail}`}
+                                src={product.thumbnail}
                                 width={100}
                                 height={100}
                                 onMouseOver={() => {
@@ -124,7 +185,7 @@ export default function Page() {
                             <Image
                                 className="cursor-pointer object-cover h-full w-full"
                                 alt={product.name}
-                                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${product.packshot}`}
+                                src={product.packshot}
                                 width={100}
                                 height={100}
                                 onMouseOver={() => {
@@ -138,11 +199,41 @@ export default function Page() {
                             />
                         </div>
                     </div>
-                </div>
+                </div> : null}
                 <div className="content lg:flex-1 p-6">
                     <TitlePage title={product.name} />
                     <p className="mb-3 font-semibold text-lg">{product.price} €</p>
-                    <p className="leading-7">{product.description}</p>
+                    <p className="leading-7 mb-3">{product.description}</p>
+                    <Modal
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                    >
+                        <Box sx={style}>
+                            <IconButton aria-label="warning">
+                                <WarningIcon color='error' />
+                            </IconButton>
+                            <Typography id="modal-modal-description">
+                                Please choose a size
+                            </Typography>
+                        </Box>
+                    </Modal>
+                    <div className="flex flex-wrap gap-1">
+                        {chips.map(chip => (
+                            <SelectableChip
+                                key={chip.id}
+                                label={chip.label}
+                                onClick={handleOpen}
+                                isSelected={chip.id === selectedChip}
+                                onSelect={() => handleSelectChip(chip.id)}
+                            />
+                        ))}
+                    </div>
+                    <div className="cursor-pointer transition ease-in-out delay-150 mt-4 inline-flex items-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white"
+                        onClick={addToCart}>
+                        Add to cart
+                    </div>
                 </div>
             </div>
         </div>
