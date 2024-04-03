@@ -12,6 +12,7 @@ import ProductCartCard from "@/components/products/ProductCartCard";
 import CartContext from '../../context/cart';
 import empty from '../../../public/empty.svg';
 import CircularProgress from '@mui/material/CircularProgress';
+import Link from "next/link";
 
 
 export default function Page() {
@@ -91,9 +92,11 @@ export default function Page() {
                                     <span>{(total + calculateTax()).toFixed(2)} €</span>
                                 </div>
                             </div>
-                            <div className="cursor-pointer w-full transition ease-in-out delay-150 mt-4 inline-flex justify-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white">
+
+                            <Link className="cursor-pointer w-full transition ease-in-out delay-150 mt-4 inline-flex justify-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white" href={"/checkout"}>
                                 CHECKOUT
-                            </div>
+                            </Link>
+
                             <div className="mt-3">
                                 <span className="font-semibold">We accept</span>
                             </div>
