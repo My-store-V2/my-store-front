@@ -3,27 +3,35 @@ import CartContext from '@/context/cart';
 import { checkout } from '@/services/api/order';
 import { getProducts } from '@/services/api/product.api';
 import TextField from '@mui/material/TextField'
+import localforage from 'localforage';
 import { useContext, useEffect, useState } from 'react';
 
 const Page = () => {
-    const { cartItems } = useContext(CartContext);
-    
-    const fetchProduct = async () => {
-        const productsList = await getProducts(8);
-        console.log(productsList)
-    }
-
-    useEffect (() => {
-        console.log(cartItems)
-    })
-
     const [userForm, setUserForm] = useState({
         delivery_mode: "",
         delivery_address: "",
         delivery_city: "",
         delivery_zipcode : "",
-        products: ["1"]
+        products: []
     });
+    
+    const getItemFromCart = async (product) => {
+        try {
+            const cartItems = await localforage.getItem('cart');
+            const cartItemsArr = [];
+            for(let i=0; i<cartItems.length; i++) {
+                cartItemsArr.push(cartItems[i].products.id );
+            }
+            setUserForm({ ...userForm, products: cartItemsArr });
+        } catch (e) {
+            console.log(e)
+        }
+    }
+    
+    useEffect (() => {
+        getItemFromCart()
+    },[])
+
 
     const handleChange = (e) => {
         setUserForm({ ...userForm, [e.target.name]: e.target.value });
