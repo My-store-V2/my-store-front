@@ -7,7 +7,7 @@ import { useState, useContext } from 'react';
 import SelectableChip from '@/components/products/SelectableChip'
 import CartContext from '../../../context/cart';
 
-const Index = ({ product, onDelete }) => {
+const Index = ({ product, readOnly = false, onDelete }) => {
     const [quantity, setQuantity] = useState(product.quantity);
     const [selectedChip, setSelectedChip] = useState(product.size);
     const { isConnected, addItemToCart, updateItemQuantity, removeItemFromCart, updateItemSize } = useContext(CartContext);
@@ -94,7 +94,7 @@ const Index = ({ product, onDelete }) => {
                     </div>
                 </div>
                 <div className="flex items-center basis-1/6">
-                    <div className="border">
+                    {!readOnly && (<div className="border">
                         <button className="p-2" onClick={decreaseQuantity}>-</button>
                         <input
                             className="focus:outline-none text-center border-0 w-10"
@@ -104,16 +104,18 @@ const Index = ({ product, onDelete }) => {
                             readOnly
                         />
                         <button className="p-2" onClick={increaseQuantity}>+</button>
-                    </div>
+                    </div>)}
+                    {readOnly && (<p className="font-semibold font-small">{quantity}</p>)}
+
                 </div>
                 <div className="basis-1/6">
                     <p className="font-semibold font-s">{product.products.price} €</p>
                 </div>
                 <div className="basis-1/4 flex flex-row justify-between items-center">
                     <p className="font-semibold font-sm">{product.products.price * quantity} €</p>
-                    <IconButton aria-label="delete" onClick={() => handleRemoveFromCart(product)}>
+                    {!readOnly && (<IconButton aria-label="delete" onClick={() => handleRemoveFromCart(product)}>
                         <DeleteOutlineIcon />
-                    </IconButton>
+                    </IconButton>)}
                 </div>
             </div>
         </div>
