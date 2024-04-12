@@ -13,6 +13,9 @@ import CartContext from '../../context/cart';
 import empty from '../../../public/empty.svg';
 import CircularProgress from '@mui/material/CircularProgress';
 import Link from "next/link";
+import { Button } from "@mui/material";
+import { useRouter } from "next/navigation";
+import { checkToken } from "@/services/api/auth.api";
 
 
 export default function Page() {
@@ -42,6 +45,23 @@ export default function Page() {
 
     const handleDelete = (product) => {
         setCartItems(items.filter(item => item.id !== product.id));
+    };
+
+    const router = useRouter();
+
+    const redirectToCheckout = () => {
+        checkToken()
+        .then((res) => {
+            console.log('res',res);
+            if(res.success == true) {
+                router.push('/checkout');
+            } else if(res.error == 403 || res.error == 401) {
+                router.push('/login');
+            }
+        })
+        .catch((err) => {
+            console.error(err)
+        });
     };
 
     useEffect(() => {
@@ -93,9 +113,10 @@ export default function Page() {
                                 </div>
                             </div>
 
-                            <Link className="cursor-pointer w-full transition ease-in-out delay-150 mt-4 inline-flex justify-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white" href={"/checkout"}>
-                                CHECKOUT
-                            </Link>
+                            <button className="cursor-pointer w-full transition ease-in-out delay-150 mt-4 inline-flex justify-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white" onClick={()=> redirectToCheckout()}>
+                            CHECKOUT
+                            </button>
+
 
                             <div className="mt-3">
                                 <span className="font-semibold">We accept</span>
