@@ -29,6 +29,7 @@ import { useRouter } from 'next/navigation'
 import { getCityByCode } from "../../services/api/global.api";
 import { editUser, getUser } from "../../services/api/auth.api";
 import PhoneIcon from '@mui/icons-material/Phone';
+import { Toaster, toast } from 'react-hot-toast';
 
 const style = {
   position: 'absolute',
@@ -130,6 +131,7 @@ export default function Page(){
                     localStorage.setItem("currentUser", JSON.stringify(currentUser.user))
                     setUser(currentUser.user)
                     handleClose()
+                    toast.success('Votre profil a bien été modifié !');
                 }
             }
       })
@@ -345,6 +347,7 @@ export default function Page(){
                         </form>
                     </Box>
                 </Modal>
+                <Toaster />
             </div>)}
             <div id="wishlist" className="bg-slate-100 min-h-screen">
                 <div className='container mx-auto flex flex-col'>
