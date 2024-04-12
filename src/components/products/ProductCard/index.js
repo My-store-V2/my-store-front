@@ -13,6 +13,7 @@ import Modal from '@mui/material/Modal';
 import IconButton from '@mui/material/IconButton';
 import WarningIcon from '@mui/icons-material/Warning';
 import CartContext from '../../../context/cart';
+import { Toaster, toast } from 'react-hot-toast';
 
 const style = {
     position: 'absolute',
@@ -69,7 +70,11 @@ const Index = ({ product }) => {
         if(selectedChip === null){
             setOpen(true)
         } else{
-            addItemToCart(product);
+            let item = {}
+            item.size = selectedChip
+            item.products = product
+            addItemToCart(item);
+            toast.success('Produit ajouté au panier!');
         }
     }
 
@@ -139,6 +144,7 @@ const Index = ({ product }) => {
                         onClick={() => addToCart(product)}>
                         Add to cart
                     </div>
+                    <Toaster />
                 </div>
                 
             </div>

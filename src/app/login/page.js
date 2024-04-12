@@ -2,6 +2,7 @@
 
 import Typography from '@mui/material/Typography';
 import * as React from 'react'
+import { useContext } from 'react';
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import IconButton from '@mui/material/IconButton'
@@ -17,13 +18,15 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { login, getUser } from "../../services/api/auth.api";
 import { useRouter } from 'next/navigation'
+import CartContext from '../../context/cart';
+
 
 
 const Page = () => {
     const router = useRouter();
     const [alert, setAlert] = React.useState(null);
     const [showPassword, setShowPassword] = React.useState(false)
-
+    const { setIsConnected } = useContext(CartContext);
     const handleClickShowPassword = () => setShowPassword((show) => !show)
 
     const handleMouseDownPassword = (event) => {
@@ -58,6 +61,7 @@ const Page = () => {
                 const currentUser = await getUser()
                 if(currentUser){
                     localStorage.setItem("currentUser", JSON.stringify(currentUser.user))
+                    setIsConnected(true)
                     router.push("/shop");
                 }
             }
