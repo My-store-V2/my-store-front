@@ -1,10 +1,14 @@
 [
     {
-      "name": "Shop",
-      "path": "/shop"
+        "name": "Shop",
+        "path": "/shop"
     },
     {
-      "name": "Contact",
-      "path": "/contact"
+        "name": "Order",
+        "path": "/order"
+    },
+    {
+        "name": "Contact",
+        "path": "/contact"
     }
 ]
