@@ -11,7 +11,7 @@ import { useState, useEffect, useContext } from 'react';
 import ProductCartCard from "@/components/products/ProductCartCard";
 import CartContext from '../../context/cart';
 import empty from '../../../public/empty.svg';
-import CircularProgress from '@mui/material/CircularProgress';
+import Loader from "@/components/UI/Loader";
 import Link from "next/link";
 import { Button } from "@mui/material";
 import { useRouter } from "next/navigation";
@@ -22,6 +22,7 @@ export default function Page() {
     const { cartItems } = useContext(CartContext);
     const [items, setCartItems] = useState([]);
     const [total, setTotal] = useState(0);
+    const [loading, setLoading] = useState(true);
     const taxRate = 0.02;
 
     useEffect(() => {
@@ -34,9 +35,9 @@ export default function Page() {
                 setTotal(totalPrice);
             }
         };
-
         calculateTotal();
     }, [cartItems]);
+
 
     const calculateTax = () => {
         return total * taxRate;
@@ -66,23 +67,25 @@ export default function Page() {
 
     useEffect(() => {
         const fetchProducts = async () => {
+            setLoading(true);
             try {
                 setCartItems(cartItems)
+                
             } catch (err) {
                 console.log(err)
+            } finally{
+                setLoading(false);
             }
 
         }
             fetchProducts();
     }, []);
+
+    if (loading) return <Loader />;
+
     return (
         <div className="container mx-auto">
             <TitlePage title="Shopping cart" />
-            {cartItems === null && (
-                <div className="min-h-screen flex flex-row py-4">
-                    <CircularProgress />
-                </div>
-            )}
             {cartItems && cartItems.length > 0 && (
                 <><ProductsCounter productsLength={cartItems.length} /><div className="min-h-screen flex flex-row py-4">
                         <div className="w-full mr-14 flex flex-col">
