@@ -3,14 +3,16 @@ import TextField from '@mui/material/TextField'
 import { useState } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { checkout } from '@/services/api/order';
-import CheckoutForm from '@/components/checkout/checkoutForm';
-import getStripe from '@/lib/stripe_utils';
+import CheckoutForm from '@/components/checkout/CheckoutForm';
+
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 
 const Page = () => {
     const [submited, setSubmited] = useState(false);
     const [clientSecret, setClientSecret] = useState('');
-    const stripe = getStripe();
 
     const [userForm, setUserForm] = useState({
         delivery_mode: "",
@@ -28,8 +30,10 @@ const Page = () => {
         e.preventDefault();
         checkout(userForm)
             .then(async (res) => {
-                setClientSecret(res.client_secret);
-                setSubmited(true);
+                if (res.client_secret) {
+                    setClientSecret(res.client_secret);
+                    setSubmited(true);
+                }
             })
     };
 
