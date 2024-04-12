@@ -1,8 +1,10 @@
 'use client'
-import TextField from '@mui/material/TextField'
-import { useState } from 'react';
-import { Elements } from '@stripe/react-stripe-js';
+import CartContext from '@/context/cart';
 import { checkout } from '@/services/api/order';
+import { getProducts } from '@/services/api/product.api';
+import TextField from '@mui/material/TextField'
+import localforage from 'localforage';
+import { useContext, useEffect, useState } from 'react';
 import CheckoutForm from '@/components/checkout/CheckoutForm';
 
 import { loadStripe } from '@stripe/stripe-js';
@@ -13,20 +15,42 @@ const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 const Page = () => {
     const [submited, setSubmited] = useState(false);
     const [clientSecret, setClientSecret] = useState('');
-
     const [userForm, setUserForm] = useState({
         delivery_mode: "",
         delivery_address: "",
-        delivery_city: "Nanterre",
-        delivery_zipcode: 92000,
-        products: ["1", "3", "4", 6]
+        delivery_city: "",
+        delivery_zipcode: "",
+        products: []
     });
+
+    const getItemFromCart = async (product) => {
+        try {
+            const cartItems = await localforage.getItem('cart');
+            const cartItemsArr = [];
+            for (let i = 0; i < cartItems.length; i++) {
+                cartItemsArr.push(cartItems[i].products.id);
+            }
+            setUserForm({ ...userForm, products: cartItemsArr });
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    useEffect(() => {
+        getItemFromCart()
+    }, [])
+
 
     const handleChange = (e) => {
         setUserForm({ ...userForm, [e.target.name]: e.target.value });
     };
 
+    const clearUserForm = (e) => {
+        setUserForm({ ...userForm, [e.target.name]: e.target.value, delivery_address: '', delivery_city: '', delivery_zipcode: '' });
+    }
+
     const submit = async (e) => {
+        console.log('userform', userForm);
         e.preventDefault();
         checkout(userForm)
             .then(async (res) => {
@@ -60,19 +84,19 @@ const Page = () => {
                         </label>
                     </li>
                     <li>
-                        <input type="radio" name="delivery_mode" id="pick-up" value="pick-up" checked={userForm.delivery_mode === 'pick-up'} onChange={(e) => handleChange(e)} class="hidden peer" />
+                        <input type="radio" name="delivery_mode" id="pick-up" value="pick-up" checked={userForm.delivery_mode === 'pick-up'} onChange={(e) => clearUserForm(e)} class="hidden peer" />
                         <label for="pick-up" class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-sm cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-black peer-checked:border-black peer-checked:text-black hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                             <div class="block">
                                 <div class="w-full text-l font-semibold">Pick-Up</div>
                             </div>
                         </label>
-                    </li>
-                </ul>
+                    </li >
+                </ul >
                 {
                     userForm.delivery_mode === 'delivery' && (
                         <div className="form-group">
                             <TextField
-                                label="Address"
+                                label="Adresse"
                                 id="delivery_address"
                                 name="delivery_address"
                                 value={userForm.delivery_address}
@@ -81,6 +105,7 @@ const Page = () => {
                                 margin="dense"
                                 className='w-full'
                                 isRequired={true}
+                                required
                             />
                             <TextField
                                 label="ville"
@@ -92,6 +117,7 @@ const Page = () => {
                                 margin="dense"
                                 className='w-full'
                                 isRequired={true}
+                                required
                             />
                             <TextField
                                 label="code postal"
@@ -103,6 +129,8 @@ const Page = () => {
                                 margin="dense"
                                 className='w-full'
                                 isRequired={true}
+                                required
+                                type='number'
                             />
                         </div>
                     )
