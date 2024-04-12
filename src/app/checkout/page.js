@@ -1,14 +1,16 @@
 'use client'
-import { checkout } from '@/services/api/order';
 import TextField from '@mui/material/TextField'
 import { useState } from 'react';
-import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { getStripe } from '@/lib/stripe_utils';
+import { Elements } from '@stripe/react-stripe-js';
+import { checkout } from '@/services/api/order';
+import CheckoutForm from '@/components/checkout/checkoutForm';
+import getStripe from '@/lib/stripe_utils';
 
 
 const Page = () => {
+    const [submited, setSubmited] = useState(false);
+    const [clientSecret, setClientSecret] = useState('');
     const stripe = getStripe();
-    const elements = useElements();
 
     const [userForm, setUserForm] = useState({
         delivery_mode: "",
@@ -24,21 +26,24 @@ const Page = () => {
 
     const submit = async (e) => {
         e.preventDefault();
-        const cardElement = elements?.getElement("card");
-
         checkout(userForm)
             .then(async (res) => {
-                clientSecret = res.data.stripe_payment_id;
-                await stripe?.confirmCardPayment(clientSecret, {
-                    payment_method: { card: cardElement },
-                });
+                setClientSecret(res.client_secret);
+                setSubmited(true);
             })
     };
+
+    if (submited === true) {
+        return (
+            <Elements stripe={stripe} options={{ clientSecret: clientSecret }}>
+                <CheckoutForm />
+            </Elements>
+        );
+    }
 
     return (
         <div className="min-h-screen mx-auto flex flex-col items-center">
             <form className='w-2/5' onSubmit={(e) => submit(e)}>
-                <CardElement />
                 <h2 class="mb-4 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">Paiement</h2>
 
                 <ul class="grid w-full gap-5 md:grid-cols-2">
