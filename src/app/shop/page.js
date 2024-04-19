@@ -21,23 +21,26 @@ export default function Page({
         const fetchProduct = async () => {
             try {
                 const productsList = await getProducts(take);
-                if(isConnected) {
+                if (isConnected) {
                     let wishlist = [];
                     wishlist = await getWishList();
                     if (wishlist.success) {
                         const wishlistId = wishlist.results.map((x) => x.id_product);
-                        const finalList = productsList.results.map((x) => {
-                            const isFavorite = x.isFavorite = wishlistId.includes(x.id)
-                            const obj = x
-                            obj.isFavorite = isFavorite
-                            return obj
+                        const list = productsList.results.filter((x) => x.active);
+                        const finalList = list.map((x) => {
+                            if (x.active) {
+                                const isFavorite = x.isFavorite = wishlistId.includes(x.id)
+                                const obj = x
+                                obj.isFavorite = isFavorite
+                                return obj
+                            }
                         });
-
                         setProducts(finalList)
                     }
-                } else{
+                } else {
                     if (productsList.success) {
-                        setProducts(productsList.results)
+                        const finalList = productsList.results.filter((x) => x.active);
+                        setProducts(finalList)
                     }
                 }
             } catch (err) {
@@ -45,7 +48,7 @@ export default function Page({
             }
 
         }
-            fetchProduct();
+        fetchProduct();
     }, []);
 
     return (
