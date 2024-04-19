@@ -35,3 +35,21 @@ export async function editUser(data) {
         console.log(error)
     }
 }
+
+export async function checkToken() {
+    try {
+        let storeToken = localStorage.getItem('storeToken');
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/auth/checkToken`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization" : `Bearer ${storeToken}`
+            }
+        });
+        return res.json();
+    } catch (error) {
+        console.log('error: ',error)
+    }
+
+} 
