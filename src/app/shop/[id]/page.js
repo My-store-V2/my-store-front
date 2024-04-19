@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation'
 import { getProduct } from '@/services/api/product.api.js';
@@ -14,6 +14,8 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import IconButton from '@mui/material/IconButton';
 import WarningIcon from '@mui/icons-material/Warning';
+import CartContext from '@/context/cart';
+import { Toaster, toast } from 'react-hot-toast';
 
 const style = {
     position: 'absolute',
@@ -41,6 +43,7 @@ export default function Page() {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const { addItemToCart } = useContext(CartContext);
     const chips = [
         { id: 1, label: 'XS' },
         { id: 2, label: 'S' },
@@ -73,8 +76,14 @@ export default function Page() {
     };
 
     const addToCart = () => {
-        if(selectedChip === null){
+        if(selectedChip === null) {
             setOpen(true)
+        } else {
+            let item = {}
+            item.size = selectedChip
+            item.products = product
+            addItemToCart(item);
+            toast.success('Produit ajouté au panier!');
         }
     }
 
@@ -231,9 +240,10 @@ export default function Page() {
                         ))}
                     </div>
                     <div className="cursor-pointer transition ease-in-out delay-150 mt-4 inline-flex items-center px-4 py-3 text-sm border border-slate-500 font-medium text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white"
-                        onClick={addToCart}>
+                        onClick={() => addToCart()}>
                         Add to cart
                     </div>
+                    <Toaster />
                 </div>
             </div>
         </div>
