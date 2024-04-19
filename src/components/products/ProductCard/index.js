@@ -5,7 +5,7 @@ import Checkbox from '@mui/material/Checkbox';
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
 import { addToWishList, deleteFromWishList } from "@/services/api/product.api.js";
-import { useState, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
 import SelectableChip from '@/components/products/SelectableChip'
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -29,7 +29,7 @@ const style = {
 };
 
 const Index = ({ product }) => {
-    const [checked, setChecked] = useState(product.isFavorite || false);
+    const [checked, setChecked] = useState(product?.isFavorite || false);
     const [selectedChip, setSelectedChip] = useState(null);
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -43,33 +43,34 @@ const Index = ({ product }) => {
         { id: 5, label: 'XL' }
     ];
 
+
     const handleSelectChip = (chipId) => {
         setSelectedChip(chipId);
     };
 
     const handleChange = (event) => {
         setChecked(event.target.checked);
-        if(!checked) {
-            addToWishList({id_product: product.id})
-            .then((res) =>{
-                console.log(res);
-            }).catch((err) =>{
-                console.log(err);
-            })
+        if (!checked) {
+            addToWishList({ id_product: product?.id })
+                .then((res) => {
+                    console.log(res);
+                }).catch((err) => {
+                    console.log(err);
+                })
         } else {
-            deleteFromWishList(product.id)
-            .then((res) =>{
-                console.log(res);
-            }).catch((err) =>{
-                console.log(err);
-            })
+            deleteFromWishList(product?.id)
+                .then((res) => {
+                    console.log(res);
+                }).catch((err) => {
+                    console.log(err);
+                })
         }
     };
 
     const addToCart = async (product) => {
-        if(selectedChip === null){
+        if (selectedChip === null) {
             setOpen(true)
-        } else{
+        } else {
             let item = {}
             item.size = selectedChip
             item.products = product
@@ -80,7 +81,7 @@ const Index = ({ product }) => {
 
     return (
         <div>
-            { product.active && (<div className="group/card max-w-sm bg-white rounded-lg relative">
+            {product.active && (<div className="group/card max-w-sm bg-white rounded-lg relative">
                 <div className="absolute top-2 right-2 z-40 bg-white p-0.5 rounded-full">
                     <Checkbox checked={checked}
                         onChange={handleChange}
@@ -91,7 +92,7 @@ const Index = ({ product }) => {
                         <Image
                             className="group-hover/thumbnail:opacity-100 group-hover/thumbnail:scale-105 transition ease-in-out delay-150"
                             alt={product.name}
-                            src={product.thumbnail.includes('uploads') ? '' : product.thumbnail}
+                            src={product.thumbnail ? product.thumbnail : ''}
                             fill
                             sizes="100%"
                             style={{ objectFit: "cover" }}
@@ -99,7 +100,7 @@ const Index = ({ product }) => {
                         <Image
                             className="opacity-100 group-hover/thumbnail:scale-105 group-hover/thumbnail:opacity-0 transition ease-in-out delay-150"
                             alt={product.name}
-                            src={product.packshot.includes('uploads') ? '' : product.packshot}
+                            src={product.packshot ? product.packshot : ''}
                             fill
                             sizes="100%"
                             style={{ objectFit: "cover" }}
@@ -116,7 +117,7 @@ const Index = ({ product }) => {
                     >
                         <Box sx={style}>
                             <IconButton aria-label="warning">
-                                <WarningIcon color='error'/>
+                                <WarningIcon color='error' />
                             </IconButton>
                             <Typography id="modal-modal-description">
                                 Please choose a size
@@ -147,11 +148,11 @@ const Index = ({ product }) => {
                         </div>
                         <Toaster />
                     </div>
-                    
+
                 </div>
             </div>)}
-        </div>
-        
+        </div >
+
     );
 }
 

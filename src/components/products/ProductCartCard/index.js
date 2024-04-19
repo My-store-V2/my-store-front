@@ -31,9 +31,9 @@ const Index = ({ product, readOnly = false, onDelete }) => {
     const increaseQuantity = () => {
         setQuantity(prevQuantity => prevQuantity + 1);
         product.quantity = quantity + 1
-        if(isConnected){
+        if (isConnected) {
             addItemToCart(product);
-        } else{
+        } else {
             handleQuantityChange(product)
         }
     };
@@ -42,9 +42,9 @@ const Index = ({ product, readOnly = false, onDelete }) => {
         if (quantity > 1) {
             setQuantity(prevQuantity => prevQuantity - 1);
             product.quantity = quantity - 1
-            if(isConnected){
+            if (isConnected) {
                 removeItemFromCart(product);
-            } else{
+            } else {
                 handleQuantityChange(product)
             }
         }
@@ -64,7 +64,7 @@ const Index = ({ product, readOnly = false, onDelete }) => {
                             <Image
                                 className="group-hover/thumbnail:opacity-100 group-hover/thumbnail:scale-105 transition ease-in-out delay-150"
                                 alt={product.products.name}
-                                src={product.products.thumbnail.includes('uploads') ? '' : product.products.thumbnail}
+                                src={product.products.thumbnail ? product.products.thumbnail : ''}
                                 fill
                                 sizes="100%"
                                 style={{ objectFit: "cover" }}
@@ -72,7 +72,7 @@ const Index = ({ product, readOnly = false, onDelete }) => {
                             <Image
                                 className="opacity-100 group-hover/thumbnail:scale-105 group-hover/thumbnail:opacity-0 transition ease-in-out delay-150"
                                 alt={product.products.name}
-                                src={product.products.packshot.includes('uploads') ? '' : product.products.packshot}
+                                src={product.products.packshot ? product.products.packshot : ''}
                                 fill
                                 sizes="100%"
                                 style={{ objectFit: "cover" }}
