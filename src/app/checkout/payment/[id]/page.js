@@ -46,9 +46,11 @@ const Page = () => {
 
     if (loading) return <Loader />;
     if (stripeSecret) return (
-        <Elements stripe={stripe} options={{ clientSecret: stripeSecret }}>
-            <CheckoutForm orderId={id} />
-        </Elements>
+        <div className="container mt-20 mx-auto min-h-screen flex flex-col items-center">
+            <Elements stripe={stripe} options={{ clientSecret: stripeSecret }}>
+                <CheckoutForm orderId={id}/>
+            </Elements>
+        </div>
     );
     return (<></>)
 
