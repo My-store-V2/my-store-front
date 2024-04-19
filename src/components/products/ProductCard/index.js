@@ -92,7 +92,7 @@ const Index = ({ product }) => {
                         <Image
                             className="group-hover/thumbnail:opacity-100 group-hover/thumbnail:scale-105 transition ease-in-out delay-150"
                             alt={product.name}
-                            src={product.thumbnail.includes('uploads') ? '' : product.thumbnail}
+                            src={product.thumbnail ? product.thumbnail : ''}
                             fill
                             sizes="100%"
                             style={{ objectFit: "cover" }}
@@ -100,7 +100,7 @@ const Index = ({ product }) => {
                         <Image
                             className="opacity-100 group-hover/thumbnail:scale-105 group-hover/thumbnail:opacity-0 transition ease-in-out delay-150"
                             alt={product.name}
-                            src={product.packshot.includes('uploads') ? '' : product.packshot}
+                            src={product.packshot ? product.packshot : ''}
                             fill
                             sizes="100%"
                             style={{ objectFit: "cover" }}
