@@ -140,16 +140,15 @@ const Page = () => {
       signUp(data)
       .then(async (res) => {
         setAlert({type:res.success ? "success" : "error", message: res.message})
-
         if(res.success){
-                localStorage.setItem('storeToken', res.token);
-                const currentUser = await getUser()
-                if(currentUser){
-                    localStorage.setItem("currentUser", JSON.stringify(currentUser.user))
-                    setIsConnected(true)
-                    router.push("/shop");
-                }
-            }
+          localStorage.setItem('storeToken', res.token);
+          const currentUser = await getUser()
+          if(currentUser){
+            localStorage.setItem("currentUser", JSON.stringify(currentUser.user))
+            setIsConnected(true)
+            router.push("/shop");
+          }
+        }
       })
     }
   }

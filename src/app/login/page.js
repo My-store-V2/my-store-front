@@ -55,7 +55,6 @@ const Page = () => {
         login(data)
         .then(async (res) => {
             setAlert({type:"success", message: res.message})
-            console.log(res)
             if(res.success){
                 localStorage.setItem('storeToken', res.token);
                 const currentUser = await getUser()
@@ -75,7 +74,7 @@ const Page = () => {
                 )
             }
             <div className="min-h-screen flex flex-col items-center">
-                <div className='my-16 text-center'>
+                <div className='mt-16 mb-10 text-center'>
                     <Typography variant="h4">
                         Welcome back
                     </Typography>
@@ -85,69 +84,66 @@ const Page = () => {
                 </div>
                 <form>
                     <div className="form-group">
-                    <TextField
-                        id="email"
-                        label="Email"
-                        variant="outlined"
-                        margin="dense"
-                        className='w-full'
-                        helperText={errors.email?.message}
-                        error={errors.email ? true : false}
-                        {...register('email')}
-                    />
+                        <TextField
+                            id="email"
+                            label="Email"
+                            variant="outlined"
+                            margin="dense"
+                            className='w-full'
+                            helperText={errors.email?.message}
+                            error={errors.email ? true : false}
+                            {...register('email')}
+                        />
                     </div>
                     <div className="form-group">
-                    <TextField
-                        autoComplete="on"
-                        id="standard-adornment-password"
-                        className="mt-3"
-                        label="Password"
-                        type={showPassword ? 'text' : 'password'}
-                        variant="outlined"
-                        margin="dense"
-                        helperText={errors.password?.message}
-                        error={errors.password ? true : false}
-                        {...register('password')}
-                        InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                            <IconButton
-                                aria-label="toggle password visibility"
-                                onClick={handleClickShowPassword}
-                                onMouseDown={handleMouseDownPassword}
-                            >
-                                {showPassword ? (
-                                <VisibilityOffOutlined />
-                                ) : (
-                                <VisibilityOutlined />
-                                )}
-                            </IconButton>
-                            </InputAdornment>
-                        ),
-                        }}
-                    />
+                        <TextField
+                            autoComplete="on"
+                            id="standard-adornment-password"
+                            className="mt-3"
+                            label="Password"
+                            type={showPassword ? 'text' : 'password'}
+                            variant="outlined"
+                            margin="dense"
+                            helperText={errors.password?.message}
+                            error={errors.password ? true : false}
+                            {...register('password')}
+                            InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={handleClickShowPassword}
+                                    onMouseDown={handleMouseDownPassword}
+                                >
+                                    {showPassword ? (
+                                    <VisibilityOffOutlined />
+                                    ) : (
+                                    <VisibilityOutlined />
+                                    )}
+                                </IconButton>
+                                </InputAdornment>
+                            ),
+                            }}
+                        />
                     </div>
                     <div className="flex flex-row justify-between items-center mt-[-10px]">
                     <FormControlLabel
                         control={<Checkbox size="small" />}
-                        className="text-sm form-control"
+                        className="text-sm form-control mt-2"
                         value={true}
                         label={<span className="text-xs">Se souvenir de moi</span>}
                     />
 
-                    <Link href="#" underline="always" className="text-xs font-light">
+                    <Link href="#" underline="always" className="text-xs font-light mt-2">
                         Mot de passe oublié?
                     </Link>
                     </div>
-                    <div className="mt-10 flex flex-col mx-auto items-center w-min">
-                        <Button
-                            type="submit"
-                            className="px-14 font-bold"
-                            variant="outlined"
-                            onClick={handleSubmit(onSubmit)}
-                        >
+                    <div className="mt-8 flex flex-col mx-auto items-center w-min">
+                        <button className="cursor-pointer transition ease-in-out delay-150 inline-flex items-center px-16 font-bold py-3 text-base border border-slate-500 text-center text-slate-500 bg-white hover:bg-slate-500 hover:text-white"
+                        type="submit"
+                        onClick={handleSubmit(onSubmit)}>
                             Login
-                        </Button>
+                        </button>
                         <Link
                             href="/register"
                             underline="always"
