@@ -22,6 +22,7 @@ export const CartProvider = ({ children }) => {
                     if (items) {
                         items = items.cart
                     }
+                    await localforage.setItem(CART_KEY, items);
                 } else {
                     const storedCartItems = await localforage.getItem(CART_KEY);
                     if (storedCartItems) {
@@ -52,6 +53,7 @@ export const CartProvider = ({ children }) => {
                 if (updatedCartItems) {
                     updatedCartItems = updatedCartItems.cart
                 }
+                await localforage.setItem(CART_KEY, updatedCartItems);
             } else {
                 const existingItemIndex = updatedCartItems.findIndex(existingItem => existingItem.id === item.id);
 
@@ -88,6 +90,7 @@ export const CartProvider = ({ children }) => {
                 if (updatedCartItems) {
                     updatedCartItems = updatedCartItems.cart
                 }
+                await localforage.setItem(CART_KEY, items);
             } else {
                 const itemId = product.id
                 const items = cartItems.filter(item => item.id !== itemId);
@@ -130,6 +133,7 @@ export const CartProvider = ({ children }) => {
                 if (updatedCartItems) {
                     updatedCartItems = updatedCartItems.cart
                 }
+                await localforage.setItem(CART_KEY, updatedCartItems);
             } else {
                 const itemId = product.id
                 updatedCartItems = cartItems.map(item => {

@@ -3,9 +3,8 @@ import { checkout } from '@/services/api/order';
 import TextField from '@mui/material/TextField'
 import localforage from 'localforage';
 import { useEffect, useState } from 'react';
-// import CheckoutForm from '@/components/checkout/CheckoutForm';
 
-import { navigation } from 'next/navigation';
+import { useRouter, router } from 'next/navigation';
 
 
 const Page = () => {
@@ -18,15 +17,13 @@ const Page = () => {
         delivery_zipcode: "",
         products: []
     });
+    const router = useRouter();
 
     const getItemFromCart = async (product) => {
         try {
             setLoading(true)
             const cartItems = await localforage.getItem('cart');
             const keys = await localforage.keys();
-            console.log('keys', keys)
-            console.log('localforage', localforage)
-            console.log(cartItems)
             if (!cartItems) {
                 // redirect to cart page
                 throw Error("cart is empty")
@@ -40,7 +37,7 @@ const Page = () => {
         } catch (e) {
             console.log(e.message)
             setLoading(false)
-            navigation.navigate("/cart")
+            router?.push("/cart")
         }
     }
 
@@ -63,9 +60,9 @@ const Page = () => {
         checkout(userForm)
             .then(async (res) => {
                 console.log('res', res);
-                if (res.id) {
+                if (res?.order?.id) {
                     // redirect to payment page
-                    navigation.navigate(`/checkout/payment/${res.id}`)
+                    router?.push(`/checkout/payment/${res?.order?.id}`)
                 } else {
                     setError(res.message)
                     setLoading(false);
@@ -150,7 +147,7 @@ const Page = () => {
                 <button type='submit' className="bg-transparent hover:bg-black text-black hover:text-white py-2 px-4 border border-black hover:border-transparent ">
                     Save & Continue
                 </button>
-                <p>Error : {error}</p>
+                {error && <p>Error : {error}</p>}
             </form>
         </div>
     )

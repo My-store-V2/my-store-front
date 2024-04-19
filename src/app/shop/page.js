@@ -21,7 +21,7 @@ export default function Page({
         const fetchProduct = async () => {
             try {
                 const productsList = await getProducts(take);
-                if(isConnected) {
+                if (isConnected) {
                     let wishlist = [];
                     wishlist = await getWishList();
                     if (wishlist.success) {
@@ -32,11 +32,10 @@ export default function Page({
                             obj.isFavorite = isFavorite
                             return obj
                         });
-
-                        setProducts(finalList)
+                        if (finalList.length > 0) setProducts(finalList)
                     }
-                } else{
-                    if (productsList.success) {
+                } else {
+                    if (productsList.success && productsList.results.length > 0) {
                         setProducts(productsList.results)
                     }
                 }
@@ -45,7 +44,7 @@ export default function Page({
             }
 
         }
-            fetchProduct();
+        fetchProduct();
     }, []);
 
     return (
