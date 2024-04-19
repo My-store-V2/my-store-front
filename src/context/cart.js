@@ -10,16 +10,16 @@ export const CartProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
 
-    
+
     useEffect(() => {
         const fetchCartItems = async () => {
             try {
-                const currentUser = localStorage.getItem('currentUser');
+                const currentUser = localforage.getItem('currentUser');
                 setIsConnected(!!currentUser);
                 let items = [];
-                if(isConnected){
+                if (isConnected) {
                     items = await getCartList()
-                    if(items){
+                    if (items) {
                         items = items.cart
                     }
                 } else {
@@ -42,14 +42,14 @@ export const CartProvider = ({ children }) => {
             let updatedCartItems = [...cartItems];
             if (isConnected) {
                 const data = {
-                "product_id": item.products.id,
-                "quantity": 1
+                    "product_id": item.products.id,
+                    "quantity": 1
                 }
                 // Call API to add item to cart if user is authenticated
                 await addToCartList(data);
                 // Fetch updated cart items from API
                 updatedCartItems = await getCartList()
-                if(updatedCartItems){
+                if (updatedCartItems) {
                     updatedCartItems = updatedCartItems.cart
                 }
             } else {
@@ -78,21 +78,21 @@ export const CartProvider = ({ children }) => {
             let updatedCartItems = [];
             if (isConnected) {
                 const data = {
-                "product_id": product.products.id,
-                "quantity": product.quantity
+                    "product_id": product.products.id,
+                    "quantity": product.quantity
                 }
                 // Call API to delete item to cart if user is authenticated
                 await deleteFromCartList(data);
                 // Fetch updated cart items from API
                 updatedCartItems = await getCartList()
-                if(updatedCartItems){
+                if (updatedCartItems) {
                     updatedCartItems = updatedCartItems.cart
                 }
             } else {
                 const itemId = product.id
-                 const items = cartItems.filter(item => item.id !== itemId);
-                 updatedCartItems = items
-                 await localforage.setItem(CART_KEY, items);
+                const items = cartItems.filter(item => item.id !== itemId);
+                updatedCartItems = items
+                await localforage.setItem(CART_KEY, items);
             }
             setCartItems(updatedCartItems);
         } catch (error) {
@@ -104,11 +104,11 @@ export const CartProvider = ({ children }) => {
         try {
             let updatedCartItems = [...cartItems];
             updatedCartItems = cartItems.map(item => {
-                    if (item.id === itemId) {
-                        return { ...item, size: size };
-                    }
-                    return item;
-                });
+                if (item.id === itemId) {
+                    return { ...item, size: size };
+                }
+                return item;
+            });
             await localforage.setItem(CART_KEY, updatedCartItems);
             setCartItems(updatedCartItems);
         } catch (error) {
@@ -122,12 +122,12 @@ export const CartProvider = ({ children }) => {
             if (isConnected) {
                 // Call API to delete item to cart if user is authenticated
                 await deleteFromCartList({
-                "product_id": product.product_id,
-                "quantity": product.quantity
+                    "product_id": product.product_id,
+                    "quantity": product.quantity
                 });
                 // Fetch updated cart items from API
                 updatedCartItems = await getCartList()
-                if(updatedCartItems){
+                if (updatedCartItems) {
                     updatedCartItems = updatedCartItems.cart
                 }
             } else {
